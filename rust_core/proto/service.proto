@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package cash.z.wallet.sdk.rpc;
+
+import "compact_formats.proto";
+
+// LightWalletService provides lightweight access to the Zcash blockchain
+service CompactTxStreamer {
+  // Get the latest block height
+  rpc GetLatestBlock(ChainSpec) returns (BlockID);
+  
+  // Get a block by height or hash
+  rpc GetBlock(BlockID) returns (CompactBlock);
+  
+  // Get a range of compact blocks
+  rpc GetBlockRange(BlockRange) returns (stream CompactBlock);
+  
+  // Get transaction details
+  rpc GetTransaction(TxFilter) returns (RawTransaction);
+  
+  // Submit a raw transaction
+  rpc SendTransaction(RawTransaction) returns (SendResponse);
+  
+  // Get the current best known block height and hash
+  rpc GetLightdInfo(Empty) returns (LightdInfo);
+  
+  // Get transaction pool status
+  rpc GetMempoolTx(Exclude) returns (stream CompactTx);
+  
+  // Get address balance and transaction count
+  rpc GetAddressTxids(TransparentAddressBlockFilter) returns (stream RawTransaction);
+}
+
+// ChainSpec identifies which network we're connecting to
+message ChainSpec {
+  // Empty for main chain
+}
+
+// BlockID specifies a block by height or hash
+message BlockID {
+  uint64 height = 1;
+  bytes hash = 2;
+}
+
+// BlockRange specifies a range of blocks to retrieve
+message BlockRange {
+  BlockID start = 1; // Inclusive start
+  BlockID end = 2;   // Inclusive end
+}
+
+// TxFilter identifies a transaction by hash
+message TxFilter {
+  bytes hash = 1; // Transaction hash
+  uint64 index = 2; // Index within block (optional)
+}
+
+// RawTransaction contains the complete transaction data
+message RawTransaction {
+  bytes data = 1;    // Raw transaction bytes
+  uint64 height = 2; // Block height (0 if unconfirmed)
+}
+
+// SendResponse contains the result of submitting a transaction
+message SendResponse {
+  int32 errorCode = 1;
+  string errorMessage = 2;
+}
+
+// LightdInfo contains server information
+message LightdInfo {
+  string version = 1;
+  string vendor = 2;
+  bool taddrSupport = 3;
+  string chainName = 4;
+  uint64 saplingActivationHeight = 5;
+  string consensusBranchId = 6;
+  uint64 blockHeight = 7;
+  string gitCommit = 8;
+  string branch = 9;
+  string buildDate = 10;
+  string buildUser = 11;
+  uint64 estimatedHeight = 12;
+  repeated string zcashdBuild = 13;
+  repeated string zcashdSubversion = 14;
+}
+
+// Empty message for RPCs that don't need parameters
+message Empty {
+}
+
+// Exclude message for mempool filtering
+message Exclude {
+  repeated bytes txid = 1;
+}
+
+// Filter for transparent address transactions
+message TransparentAddressBlockFilter {
+  string address = 1;
+  BlockRange range = 2;
+}
