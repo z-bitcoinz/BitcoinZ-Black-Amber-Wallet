@@ -63,22 +63,22 @@ echo "🚀 Building for Android targets..."
 # Build for ARM64 (most important)
 echo "📱 Building for ARM64 (aarch64-linux-android)..."
 cargo build --target aarch64-linux-android --release
-cp target/aarch64-linux-android/release/libbitcoinz_mobile.so ../flutter_app/android/app/src/main/jniLibs/arm64-v8a/
+cp target/aarch64-linux-android/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/arm64-v8a/
 
 # Build for ARM32
 echo "📱 Building for ARM32 (armv7-linux-androideabi)..."
 cargo build --target armv7-linux-androideabi --release
-cp target/armv7-linux-androideabi/release/libbitcoinz_mobile.so ../flutter_app/android/app/src/main/jniLibs/armeabi-v7a/
+cp target/armv7-linux-androideabi/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/armeabi-v7a/
 
 # Build for x86_64 (emulators)
 echo "🖥️  Building for x86_64 (x86_64-linux-android)..."
 cargo build --target x86_64-linux-android --release
-cp target/x86_64-linux-android/release/libbitcoinz_mobile.so ../flutter_app/android/app/src/main/jniLibs/x86_64/
+cp target/x86_64-linux-android/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/x86_64/
 
 # Build for x86 (older emulators)
 echo "🖥️  Building for x86 (i686-linux-android)..."
 cargo build --target i686-linux-android --release
-cp target/i686-linux-android/release/libbitcoinz_mobile.so ../flutter_app/android/app/src/main/jniLibs/x86/
+cp target/i686-linux-android/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/x86/
 
 cd ..
 
