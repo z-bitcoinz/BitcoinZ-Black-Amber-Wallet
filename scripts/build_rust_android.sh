@@ -7,7 +7,7 @@ set -e
 echo "🔧 Building BitcoinZ Mobile Wallet for Android..."
 
 # Check if we're in the right directory
-if [ ! -f "rust_core/Cargo.toml" ]; then
+if [ ! -f "flutter_app/rust/Cargo.toml" ]; then
     echo "❌ Error: This script must be run from the bitcoinz-mobile-wallet root directory"
     exit 1
 fi
@@ -30,7 +30,7 @@ ANDROID_TARGETS=(
 # Create output directories
 mkdir -p flutter_app/android/app/src/main/jniLibs/{arm64-v8a,armeabi-v7a,x86_64,x86}
 
-cd rust_core
+cd flutter_app/rust
 
 echo "📋 Installing Rust targets for Android..."
 for target in "${ANDROID_TARGETS[@]}"; do
@@ -63,24 +63,24 @@ echo "🚀 Building for Android targets..."
 # Build for ARM64 (most important)
 echo "📱 Building for ARM64 (aarch64-linux-android)..."
 cargo build --target aarch64-linux-android --release
-cp target/aarch64-linux-android/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/arm64-v8a/
+cp target/aarch64-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/arm64-v8a/
 
 # Build for ARM32
 echo "📱 Building for ARM32 (armv7-linux-androideabi)..."
 cargo build --target armv7-linux-androideabi --release
-cp target/armv7-linux-androideabi/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/armeabi-v7a/
+cp target/armv7-linux-androideabi/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/armeabi-v7a/
 
 # Build for x86_64 (emulators)
 echo "🖥️  Building for x86_64 (x86_64-linux-android)..."
 cargo build --target x86_64-linux-android --release
-cp target/x86_64-linux-android/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/x86_64/
+cp target/x86_64-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/x86_64/
 
 # Build for x86 (older emulators)
 echo "🖥️  Building for x86 (i686-linux-android)..."
 cargo build --target i686-linux-android --release
-cp target/i686-linux-android/release/libbitcoinz_wallet_rust.so ../flutter_app/android/app/src/main/jniLibs/x86/
+cp target/i686-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/x86/
 
-cd ..
+cd ../..
 
 echo "✅ Android build completed successfully!"
 echo "📦 Native libraries copied to flutter_app/android/app/src/main/jniLibs/"
