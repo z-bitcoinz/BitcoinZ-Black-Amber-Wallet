@@ -18,7 +18,8 @@ BitcoinZ Mobile Light Wallet - A secure, privacy-focused cross-platform mobile w
 ./scripts/build_rust_ios.sh        # For iOS (macOS only)
 ./scripts/build_rust_macos.sh      # For macOS
 
-# Flutter builds
+# Flutter builds (from flutter_app directory)
+cd flutter_app
 flutter build apk                  # Android APK
 flutter build appbundle           # Android App Bundle
 flutter build ios                # iOS (requires macOS)
@@ -30,8 +31,8 @@ flutter run                      # Run on connected device/emulator
 
 ### Test Commands
 ```bash
-# Rust core tests
-cd rust_core && cargo test
+# Rust library tests (Flutter Rust Bridge)
+cd flutter_app/rust && cargo test
 
 # Flutter tests
 cd flutter_app && flutter test
@@ -52,10 +53,11 @@ The app uses a two-layer architecture with Flutter handling UI/UX and Rust provi
    - FFI service layer for Rust communication
    - Secure storage for sensitive data
 
-2. **Rust Core** (`/rust_core/`):
-   - All cryptographic operations
+2. **Rust Library** (`/flutter_app/rust/`):
+   - Flutter Rust Bridge integration (v2.11.1)
+   - All cryptographic operations via zecwalletlitelib
    - Direct blockchain communication via lightwalletd protocol
-   - Memory-safe FFI exports (40+ functions)
+   - Memory-safe FFI exports
    - Zero-knowledge proof generation
 
 ### Key Architectural Decisions
@@ -67,25 +69,28 @@ The app uses a two-layer architecture with Flutter handling UI/UX and Rust provi
 
 ### Critical Files for Understanding the System
 
-1. **`/rust_core/src/lib.rs`**: Main FFI exports - defines the contract between Flutter and Rust
-2. **`/flutter_app/lib/services/rust_ffi_service.dart`**: Flutter-side FFI integration
+1. **`/flutter_app/rust/src/lib.rs`**: Main FFI exports via Flutter Rust Bridge
+2. **`/flutter_app/lib/services/bitcoinz_rust_service.dart`**: Flutter-side Rust FFI integration
 3. **`/flutter_app/lib/providers/wallet_provider.dart`**: Core wallet state management
 4. **`/flutter_app/lib/models/`**: Data models with JSON serialization
-5. **`/rust_core/src/mobile_wallet.rs`**: Core wallet operations implementation
+5. **`/flutter_app/rust/zecwalletlitelib/`**: Core BitcoinZ wallet operations (from BitcoinZ Blue)
+6. **`/flutter_app/lib/services/complete_bitcoinz_rpc_service.dart`**: Legacy RPC service (40+ methods)
 
 ### FFI Function Patterns
 
 When adding new FFI functions:
-1. Define in `/rust_core/src/lib.rs` with `#[no_mangle]` and `extern "C"`
-2. Add corresponding Dart binding in `/flutter_app/lib/services/rust_ffi_service.dart`
-3. Use CString for string parameters, return JSON strings for complex data
-4. Always handle errors with Result<String, String> pattern
+1. Define in `/flutter_app/rust/src/lib.rs` using Flutter Rust Bridge annotations
+2. Run `flutter_rust_bridge_codegen generate` to update Dart bindings
+3. Use standard Rust types - Flutter Rust Bridge handles serialization
+4. Always handle errors with Result<T, String> pattern
+5. Update `/flutter_app/lib/services/bitcoinz_rust_service.dart` for high-level service calls
 
 ### Development Workflow
 
-1. **Rust changes**: Modify Rust code → Run platform build script → Test with `cargo test`
+1. **Rust changes**: Modify code in `/flutter_app/rust/` → Run `flutter_rust_bridge_codegen generate` → Test with `cargo test`
 2. **Flutter changes**: Standard Flutter development → Hot reload works for UI
-3. **FFI changes**: Requires rebuilding Rust library and Flutter restart
+3. **FFI changes**: Run codegen, rebuild Rust library, and restart Flutter app
+4. **New FFI functions**: Define in Rust → Run codegen → Update Dart service layer
 
 ### Platform-Specific Notes
 
@@ -102,9 +107,19 @@ When adding new FFI functions:
 - Auto-lock feature with configurable timeout
 - Never log sensitive information
 
+### Key Dependencies
+
+- **Flutter Rust Bridge**: v2.11.1 for seamless Rust-Flutter integration
+- **zecwalletlitelib**: Core wallet functionality ported from BitcoinZ Blue
+- **Provider**: State management for reactive UI updates
+- **flutter_secure_storage**: Secure storage for sensitive data (keys, seeds)
+- **local_auth**: Biometric authentication support
+- **mobile_scanner**: QR code scanning for addresses and URIs
+
 ### Testing Strategy
 
-- Rust unit tests for cryptographic operations
-- Flutter widget tests for UI components
+- Rust unit tests for cryptographic operations (`cd flutter_app/rust && cargo test`)
+- Flutter widget tests for UI components (`cd flutter_app && flutter test`)
 - Integration tests should verify FFI bridge functionality
 - Always test address generation and transaction signing thoroughly
+- Use `flutter analyze` for code quality checks
