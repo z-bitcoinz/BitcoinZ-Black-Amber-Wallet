@@ -5,7 +5,6 @@ import 'package:bitcoinz_black_amber/services/qr_service.dart';
 import 'package:bitcoinz_black_amber/services/sharing_service.dart';
 import 'package:bitcoinz_black_amber/widgets/enhanced_amount_input.dart';
 import 'package:bitcoinz_black_amber/providers/currency_provider.dart';
-import 'package:bitcoinz_black_amber/models/currency_model.dart';
 
 void main() {
   group('Enhanced Payment Request Tests', () {

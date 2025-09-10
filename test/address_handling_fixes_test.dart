@@ -4,12 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
-import '../lib/providers/wallet_provider.dart';
-import '../lib/providers/currency_provider.dart';
-import '../lib/screens/wallet/receive_screen.dart';
-import '../lib/widgets/address_selector_widget.dart';
-import '../lib/models/address_label.dart';
-import '../lib/services/qr_service.dart';
+import 'package:bitcoinz_black_amber/providers/wallet_provider.dart';
+import 'package:bitcoinz_black_amber/providers/currency_provider.dart';
+import 'package:bitcoinz_black_amber/screens/wallet/receive_screen.dart';
+import 'package:bitcoinz_black_amber/widgets/address_selector_widget.dart';
+import 'package:bitcoinz_black_amber/models/address_label.dart';
+import 'package:bitcoinz_black_amber/services/qr_service.dart';
 
 // Generate mocks
 @GenerateMocks([WalletProvider, CurrencyProvider])
