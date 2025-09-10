@@ -490,7 +490,8 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                         ],
                       ),
                       
-                      SizedBox(height: 24),
+                      
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),

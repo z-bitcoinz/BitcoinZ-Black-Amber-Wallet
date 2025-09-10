@@ -5,9 +5,15 @@ import 'package:ffi/ffi.dart';
 
 // Test what addresses our wallet is actually generating
 
+// Native function signatures
+typedef InitFunctionNative = Pointer<Utf8> Function(Pointer<Utf8>);
+typedef CreateWalletFunctionNative = Pointer<Utf8> Function(Pointer<Utf8>);
+typedef FreeFunctionNative = Void Function(Pointer<Utf8>);
+
+// Dart function signatures
 typedef InitFunction = Pointer<Utf8> Function(Pointer<Utf8>);
 typedef CreateWalletFunction = Pointer<Utf8> Function(Pointer<Utf8>);
-typedef FreeFunction = Void Function(Pointer<Utf8>);
+typedef FreeFunction = void Function(Pointer<Utf8>);
 
 String? _convertCString(Pointer<Utf8> cString) {
   if (cString == nullptr) return null;
@@ -25,9 +31,9 @@ void main() {
     final library = DynamicLibrary.open(libraryPath);
     
     // Get functions
-    final initWallet = library.lookupFunction<InitFunction>('bitcoinz_init');
-    final createWallet = library.lookupFunction<CreateWalletFunction>('bitcoinz_create_wallet');
-    final freeString = library.lookupFunction<FreeFunction>('bitcoinz_free_string');
+    final initWallet = library.lookupFunction<InitFunctionNative, InitFunction>('bitcoinz_init');
+    final createWallet = library.lookupFunction<CreateWalletFunctionNative, CreateWalletFunction>('bitcoinz_create_wallet');
+    final freeString = library.lookupFunction<FreeFunctionNative, FreeFunction>('bitcoinz_free_string');
     
     // Initialize wallet
     final serverUrl = 'https://lightd.btcz.rocks:9067'.toNativeUtf8();

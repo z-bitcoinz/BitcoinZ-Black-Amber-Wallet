@@ -13,7 +13,6 @@ cd rust
 TARGETS=(
     "aarch64-apple-ios"          # iOS devices (iPhone/iPad)
     "x86_64-apple-ios"           # iOS Simulator (Intel)
-    "aarch64-apple-ios-sim"      # iOS Simulator (Apple Silicon)
 )
 
 # iOS Frameworks output directory

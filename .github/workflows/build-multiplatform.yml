@@ -136,7 +136,7 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ env.RUST_VERSION }}
-        targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+        targets: aarch64-apple-ios,x86_64-apple-ios
 
     - name: 🔍 Verify Rust targets
       run: |
