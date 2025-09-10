@@ -10,7 +10,7 @@ on:
 
 env:
   FLUTTER_VERSION: '3.24.5'
-  RUST_VERSION: '1.75.0'
+  RUST_VERSION: '1.82.0'
 
 jobs:
   # ================================
@@ -56,8 +56,8 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          flutter_app/rust/target
-        key: rust-android-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+          rust/target
+        key: rust-android-${{ runner.os }}-${{ hashFiles('rust/Cargo.lock') }}
         restore-keys: |
           rust-android-${{ runner.os }}-
 
@@ -66,14 +66,14 @@ jobs:
       with:
         path: |
           ~/.pub-cache
-          flutter_app/.dart_tool
-        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          .dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
         restore-keys: |
           flutter-${{ runner.os }}-
 
     - name: 🔨 Build Rust libraries for Android
       run: |
-        cd flutter_app
+        # Working in root directory
         export ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}
         export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
         
@@ -82,28 +82,28 @@ jobs:
 
     - name: 🔨 Generate Flutter Rust Bridge bindings
       run: |
-        cd flutter_app
+        # Working in root directory
         dart pub global activate flutter_rust_bridge_codegen
         flutter_rust_bridge_codegen generate
 
     - name: 📦 Get Flutter dependencies
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter pub get
 
     - name: 🔍 Run Flutter analysis
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter analyze
 
     - name: 🏗️ Build Android APK
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter build apk --release --split-per-abi
 
     - name: 🏗️ Build Android App Bundle
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter build appbundle --release
 
     - name: 📤 Upload Android APK artifacts
@@ -111,8 +111,8 @@ jobs:
       with:
         name: android-apk
         path: |
-          flutter_app/build/app/outputs/flutter-apk/*.apk
-          flutter_app/build/app/outputs/bundle/release/*.aab
+          build/app/outputs/flutter-apk/*.apk
+          build/app/outputs/bundle/release/*.aab
 
   # ================================
   # iOS BUILD
@@ -153,8 +153,8 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          flutter_app/rust/target
-        key: rust-ios-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+          rust/target
+        key: rust-ios-${{ runner.os }}-${{ hashFiles('rust/Cargo.lock') }}
         restore-keys: |
           rust-ios-${{ runner.os }}-
 
@@ -163,42 +163,42 @@ jobs:
       with:
         path: |
           ~/.pub-cache
-          flutter_app/.dart_tool
-        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          .dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
         restore-keys: |
           flutter-${{ runner.os }}-
 
     - name: 🔨 Build Rust libraries for iOS
       run: |
-        cd flutter_app
+        # Working in root directory
         .github/scripts/build-rust-ios.sh
 
     - name: 🔨 Generate Flutter Rust Bridge bindings
       run: |
-        cd flutter_app
+        # Working in root directory
         dart pub global activate flutter_rust_bridge_codegen
         flutter_rust_bridge_codegen generate
 
     - name: 📦 Get Flutter dependencies
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter pub get
 
     - name: 🔍 Run Flutter analysis
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter analyze
 
     - name: 🏗️ Build iOS app (no codesign)
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter build ios --release --no-codesign
 
     - name: 📤 Upload iOS app artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ios-app
-        path: flutter_app/build/ios/iphoneos/Runner.app
+        path: build/ios/iphoneos/Runner.app
 
   # ================================
   # macOS BUILD
@@ -239,8 +239,8 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          flutter_app/rust/target
-        key: rust-macos-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+          rust/target
+        key: rust-macos-${{ runner.os }}-${{ hashFiles('rust/Cargo.lock') }}
         restore-keys: |
           rust-macos-${{ runner.os }}-
 
@@ -249,47 +249,47 @@ jobs:
       with:
         path: |
           ~/.pub-cache
-          flutter_app/.dart_tool
-        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          .dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
         restore-keys: |
           flutter-${{ runner.os }}-
 
     - name: 🔨 Build Rust libraries for macOS
       run: |
-        cd flutter_app
+        # Working in root directory
         .github/scripts/build-rust-macos.sh
 
     - name: 🔨 Generate Flutter Rust Bridge bindings
       run: |
-        cd flutter_app
+        # Working in root directory
         dart pub global activate flutter_rust_bridge_codegen
         flutter_rust_bridge_codegen generate
 
     - name: 📦 Get Flutter dependencies
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter pub get
 
     - name: 🔍 Run Flutter analysis
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter analyze
 
     - name: 🏗️ Build macOS app
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter build macos --release
 
     - name: 📦 Create macOS ZIP archive
       run: |
-        cd flutter_app/build/macos/Build/Products/Release
+        # Working in root directory/build/macos/Build/Products/Release
         zip -r BitcoinZ-Black-Amber-macOS.zip "BitcoinZ Black Amber.app"
 
     - name: 📤 Upload macOS app artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macos-app
-        path: flutter_app/build/macos/Build/Products/Release/BitcoinZ-Black-Amber-macOS.zip
+        path: build/macos/Build/Products/Release/BitcoinZ-Black-Amber-macOS.zip
 
   # ================================
   # LINUX BUILD
@@ -328,8 +328,8 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          flutter_app/rust/target
-        key: rust-linux-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+          rust/target
+        key: rust-linux-${{ runner.os }}-${{ hashFiles('rust/Cargo.lock') }}
         restore-keys: |
           rust-linux-${{ runner.os }}-
 
@@ -338,47 +338,47 @@ jobs:
       with:
         path: |
           ~/.pub-cache
-          flutter_app/.dart_tool
-        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          .dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
         restore-keys: |
           flutter-${{ runner.os }}-
 
     - name: 🔨 Build Rust libraries for Linux
       run: |
-        cd flutter_app
+        # Working in root directory
         .github/scripts/build-rust-linux.sh
 
     - name: 🔨 Generate Flutter Rust Bridge bindings
       run: |
-        cd flutter_app
+        # Working in root directory
         dart pub global activate flutter_rust_bridge_codegen
         flutter_rust_bridge_codegen generate
 
     - name: 📦 Get Flutter dependencies
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter pub get
 
     - name: 🔍 Run Flutter analysis
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter analyze
 
     - name: 🏗️ Build Linux app
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter build linux --release
 
     - name: 📦 Create Linux tar.gz archive
       run: |
-        cd flutter_app/build/linux/x64/release
+        # Working in root directory/build/linux/x64/release
         tar -czf BitcoinZ-Black-Amber-Linux.tar.gz bundle/
 
     - name: 📤 Upload Linux app artifacts
       uses: actions/upload-artifact@v4
       with:
         name: linux-app
-        path: flutter_app/build/linux/x64/release/BitcoinZ-Black-Amber-Linux.tar.gz
+        path: build/linux/x64/release/BitcoinZ-Black-Amber-Linux.tar.gz
 
   # ================================
   # WINDOWS BUILD
@@ -410,8 +410,8 @@ jobs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          flutter_app/rust/target
-        key: rust-windows-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+          rust/target
+        key: rust-windows-${{ runner.os }}-${{ hashFiles('rust/Cargo.lock') }}
         restore-keys: |
           rust-windows-${{ runner.os }}-
 
@@ -420,47 +420,47 @@ jobs:
       with:
         path: |
           ~/.pub-cache
-          flutter_app/.dart_tool
-        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          .dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
         restore-keys: |
           flutter-${{ runner.os }}-
 
     - name: 🔨 Build Rust libraries for Windows
       run: |
-        cd flutter_app
+        # Working in root directory
         .github/scripts/build-rust-windows.bat
 
     - name: 🔨 Generate Flutter Rust Bridge bindings
       run: |
-        cd flutter_app
+        # Working in root directory
         dart pub global activate flutter_rust_bridge_codegen
         flutter_rust_bridge_codegen generate
 
     - name: 📦 Get Flutter dependencies
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter pub get
 
     - name: 🔍 Run Flutter analysis
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter analyze
 
     - name: 🏗️ Build Windows app
       run: |
-        cd flutter_app
+        # Working in root directory
         flutter build windows --release
 
     - name: 📦 Create Windows ZIP archive
       run: |
-        cd flutter_app/build/windows/x64/runner/Release
+        # Working in root directory/build/windows/x64/runner/Release
         7z a -tzip BitcoinZ-Black-Amber-Windows.zip *
 
     - name: 📤 Upload Windows app artifacts
       uses: actions/upload-artifact@v4
       with:
         name: windows-app
-        path: flutter_app/build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows.zip
+        path: build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows.zip
 
   # ================================
   # RELEASE CREATION
