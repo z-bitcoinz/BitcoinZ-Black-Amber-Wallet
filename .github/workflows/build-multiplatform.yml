@@ -1,0 +1,508 @@
+name: 🚀 Multi-Platform Build
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+env:
+  FLUTTER_VERSION: '3.24.5'
+  RUST_VERSION: '1.75.0'
+
+jobs:
+  # ================================
+  # ANDROID BUILD
+  # ================================
+  build-android:
+    name: 🤖 Build Android
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: ☕ Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: 🦀 Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
+
+    - name: 📱 Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+
+    - name: 🔧 Set up Android NDK
+      uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r26d
+        add-to-path: false
+
+    - name: 📦 Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          flutter_app/rust/target
+        key: rust-android-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+        restore-keys: |
+          rust-android-${{ runner.os }}-
+
+    - name: 📦 Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          flutter_app/.dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-
+
+    - name: 🔨 Build Rust libraries for Android
+      run: |
+        cd flutter_app
+        export ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}
+        export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+        
+        # Build for all Android architectures
+        .github/scripts/build-rust-android.sh
+
+    - name: 🔨 Generate Flutter Rust Bridge bindings
+      run: |
+        cd flutter_app
+        dart pub global activate flutter_rust_bridge_codegen
+        flutter_rust_bridge_codegen generate
+
+    - name: 📦 Get Flutter dependencies
+      run: |
+        cd flutter_app
+        flutter pub get
+
+    - name: 🔍 Run Flutter analysis
+      run: |
+        cd flutter_app
+        flutter analyze
+
+    - name: 🏗️ Build Android APK
+      run: |
+        cd flutter_app
+        flutter build apk --release --split-per-abi
+
+    - name: 🏗️ Build Android App Bundle
+      run: |
+        cd flutter_app
+        flutter build appbundle --release
+
+    - name: 📤 Upload Android APK artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: |
+          flutter_app/build/app/outputs/flutter-apk/*.apk
+          flutter_app/build/app/outputs/bundle/release/*.aab
+
+  # ================================
+  # iOS BUILD
+  # ================================
+  build-ios:
+    name: 🍎 Build iOS
+    runs-on: macos-14
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🦀 Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+
+    - name: 📱 Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+
+    - name: 🍎 Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.4'
+
+    - name: 🔧 Install cargo-lipo
+      run: cargo install cargo-lipo
+
+    - name: 📦 Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          flutter_app/rust/target
+        key: rust-ios-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+        restore-keys: |
+          rust-ios-${{ runner.os }}-
+
+    - name: 📦 Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          flutter_app/.dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-
+
+    - name: 🔨 Build Rust libraries for iOS
+      run: |
+        cd flutter_app
+        .github/scripts/build-rust-ios.sh
+
+    - name: 🔨 Generate Flutter Rust Bridge bindings
+      run: |
+        cd flutter_app
+        dart pub global activate flutter_rust_bridge_codegen
+        flutter_rust_bridge_codegen generate
+
+    - name: 📦 Get Flutter dependencies
+      run: |
+        cd flutter_app
+        flutter pub get
+
+    - name: 🔍 Run Flutter analysis
+      run: |
+        cd flutter_app
+        flutter analyze
+
+    - name: 🏗️ Build iOS app (no codesign)
+      run: |
+        cd flutter_app
+        flutter build ios --release --no-codesign
+
+    - name: 📤 Upload iOS app artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app
+        path: flutter_app/build/ios/iphoneos/Runner.app
+
+  # ================================
+  # macOS BUILD
+  # ================================
+  build-macos:
+    name: 🖥️ Build macOS
+    runs-on: macos-14
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🦀 Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+        targets: x86_64-apple-darwin,aarch64-apple-darwin
+
+    - name: 📱 Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+
+    - name: 🍎 Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.4'
+
+    - name: 🔧 Install cargo-lipo
+      run: cargo install cargo-lipo
+
+    - name: 📦 Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          flutter_app/rust/target
+        key: rust-macos-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+        restore-keys: |
+          rust-macos-${{ runner.os }}-
+
+    - name: 📦 Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          flutter_app/.dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-
+
+    - name: 🔨 Build Rust libraries for macOS
+      run: |
+        cd flutter_app
+        .github/scripts/build-rust-macos.sh
+
+    - name: 🔨 Generate Flutter Rust Bridge bindings
+      run: |
+        cd flutter_app
+        dart pub global activate flutter_rust_bridge_codegen
+        flutter_rust_bridge_codegen generate
+
+    - name: 📦 Get Flutter dependencies
+      run: |
+        cd flutter_app
+        flutter pub get
+
+    - name: 🔍 Run Flutter analysis
+      run: |
+        cd flutter_app
+        flutter analyze
+
+    - name: 🏗️ Build macOS app
+      run: |
+        cd flutter_app
+        flutter build macos --release
+
+    - name: 📦 Create macOS ZIP archive
+      run: |
+        cd flutter_app/build/macos/Build/Products/Release
+        zip -r BitcoinZ-Black-Amber-macOS.zip "BitcoinZ Black Amber.app"
+
+    - name: 📤 Upload macOS app artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-app
+        path: flutter_app/build/macos/Build/Products/Release/BitcoinZ-Black-Amber-macOS.zip
+
+  # ================================
+  # LINUX BUILD
+  # ================================
+  build-linux:
+    name: 🐧 Build Linux
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🦀 Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+
+    - name: 📱 Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+
+    - name: 🔧 Install Linux dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          clang cmake ninja-build pkg-config libgtk-3-dev \
+          liblzma-dev libstdc++-12-dev
+
+    - name: 📦 Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          flutter_app/rust/target
+        key: rust-linux-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+        restore-keys: |
+          rust-linux-${{ runner.os }}-
+
+    - name: 📦 Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          flutter_app/.dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-
+
+    - name: 🔨 Build Rust libraries for Linux
+      run: |
+        cd flutter_app
+        .github/scripts/build-rust-linux.sh
+
+    - name: 🔨 Generate Flutter Rust Bridge bindings
+      run: |
+        cd flutter_app
+        dart pub global activate flutter_rust_bridge_codegen
+        flutter_rust_bridge_codegen generate
+
+    - name: 📦 Get Flutter dependencies
+      run: |
+        cd flutter_app
+        flutter pub get
+
+    - name: 🔍 Run Flutter analysis
+      run: |
+        cd flutter_app
+        flutter analyze
+
+    - name: 🏗️ Build Linux app
+      run: |
+        cd flutter_app
+        flutter build linux --release
+
+    - name: 📦 Create Linux tar.gz archive
+      run: |
+        cd flutter_app/build/linux/x64/release
+        tar -czf BitcoinZ-Black-Amber-Linux.tar.gz bundle/
+
+    - name: 📤 Upload Linux app artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-app
+        path: flutter_app/build/linux/x64/release/BitcoinZ-Black-Amber-Linux.tar.gz
+
+  # ================================
+  # WINDOWS BUILD
+  # ================================
+  build-windows:
+    name: 🪟 Build Windows
+    runs-on: windows-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🦀 Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ env.RUST_VERSION }}
+
+    - name: 📱 Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        cache: true
+
+    - name: 📦 Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          flutter_app/rust/target
+        key: rust-windows-${{ runner.os }}-${{ hashFiles('flutter_app/rust/Cargo.lock') }}
+        restore-keys: |
+          rust-windows-${{ runner.os }}-
+
+    - name: 📦 Cache Flutter dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.pub-cache
+          flutter_app/.dart_tool
+        key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-
+
+    - name: 🔨 Build Rust libraries for Windows
+      run: |
+        cd flutter_app
+        .github/scripts/build-rust-windows.bat
+
+    - name: 🔨 Generate Flutter Rust Bridge bindings
+      run: |
+        cd flutter_app
+        dart pub global activate flutter_rust_bridge_codegen
+        flutter_rust_bridge_codegen generate
+
+    - name: 📦 Get Flutter dependencies
+      run: |
+        cd flutter_app
+        flutter pub get
+
+    - name: 🔍 Run Flutter analysis
+      run: |
+        cd flutter_app
+        flutter analyze
+
+    - name: 🏗️ Build Windows app
+      run: |
+        cd flutter_app
+        flutter build windows --release
+
+    - name: 📦 Create Windows ZIP archive
+      run: |
+        cd flutter_app/build/windows/x64/runner/Release
+        7z a -tzip BitcoinZ-Black-Amber-Windows.zip *
+
+    - name: 📤 Upload Windows app artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-app
+        path: flutter_app/build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows.zip
+
+  # ================================
+  # RELEASE CREATION
+  # ================================
+  create-release:
+    name: 🚀 Create Release
+    needs: [build-android, build-ios, build-macos, build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: 📥 Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts/
+
+    - name: 📤 Upload Release Assets
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/android-apk/*.apk
+          artifacts/android-apk/*.aab
+          artifacts/macos-app/*.zip
+          artifacts/linux-app/*.tar.gz
+          artifacts/windows-app/*.zip
+        body: |
+          ## 🎉 BitcoinZ Black Amber Release
+          
+          **Multi-platform cryptocurrency wallet built with Flutter + Rust**
+          
+          ### 📦 Downloads:
+          - **Android**: APK files for all architectures + Play Store AAB
+          - **iOS**: Contact for TestFlight/App Store version
+          - **macOS**: Universal app bundle (Intel + Apple Silicon)
+          - **Linux**: Portable application bundle
+          - **Windows**: Portable application bundle
+          
+          ### ⚡ Optimized for Battery Life
+          This release includes significant logging optimizations for better battery performance on mobile devices.
+          
+          ### 🔧 Technical Details
+          - **Flutter**: ${{ env.FLUTTER_VERSION }}
+          - **Rust**: ${{ env.RUST_VERSION }}
+          - **Architecture**: Flutter frontend + Rust FFI backend
+          - **Security**: Hardware wallet support, biometric auth, secure storage
