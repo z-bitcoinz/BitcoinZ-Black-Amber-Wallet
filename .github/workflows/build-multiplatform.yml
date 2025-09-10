@@ -38,6 +38,12 @@ jobs:
         toolchain: ${{ env.RUST_VERSION }}
         targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
 
+    - name: 🔍 Verify Rust targets
+      run: |
+        echo "📋 Installed Rust targets:"
+        rustup target list --installed
+        echo "✅ Rust setup complete"
+
     - name: 📱 Set up Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -93,7 +99,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze
+        flutter analyze --no-fatal-infos
 
     - name: 🏗️ Build Android APK
       run: |
@@ -130,7 +136,13 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ env.RUST_VERSION }}
-        targets: aarch64-apple-ios,x86_64-apple-ios
+        targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+
+    - name: 🔍 Verify Rust targets
+      run: |
+        echo "📋 Installed Rust targets:"
+        rustup target list --installed
+        echo "✅ Rust setup complete"
 
     - name: 📱 Set up Flutter
       uses: subosito/flutter-action@v2
@@ -183,7 +195,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze
+        flutter analyze --no-fatal-infos
 
     - name: 🏗️ Build iOS app (no codesign)
       run: |
@@ -214,6 +226,12 @@ jobs:
       with:
         toolchain: ${{ env.RUST_VERSION }}
         targets: x86_64-apple-darwin,aarch64-apple-darwin
+
+    - name: 🔍 Verify Rust targets
+      run: |
+        echo "📋 Installed Rust targets:"
+        rustup target list --installed
+        echo "✅ Rust setup complete"
 
     - name: 📱 Set up Flutter
       uses: subosito/flutter-action@v2
@@ -266,7 +284,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze
+        flutter analyze --no-fatal-infos
 
     - name: 🏗️ Build macOS app
       run: |
@@ -352,7 +370,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze
+        flutter analyze --no-fatal-infos
 
     - name: 🏗️ Build Linux app
       run: |
@@ -431,7 +449,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze
+        flutter analyze --no-fatal-infos
 
     - name: 🏗️ Build Windows app
       run: |

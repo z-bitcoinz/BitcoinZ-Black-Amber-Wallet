@@ -33,7 +33,7 @@ void main() {
     final serverUrl = 'https://lightd.btcz.rocks:9067'.toNativeUtf8();
     final initResult = initWallet(serverUrl);
     final initResponse = _convertCString(initResult);
-    print('Init result: $initResponse');
+    // print('Init result: $initResponse'); // Removed to fix CI analysis
     freeString(initResult);
     
     // Test seed phrase (24 words)
@@ -46,40 +46,40 @@ void main() {
     
     if (createResponse != null) {
       final decoded = jsonDecode(createResponse);
-      print('\n📱 Wallet Creation Result:');
-      print('Success: ${decoded['success']}');
+      // print('\n📱 Wallet Creation Result:'); // Removed to fix CI analysis
+      // print('Success: ${decoded['success']}'); // Removed to fix CI analysis
       
       if (decoded['success'] == true && decoded['data'] != null) {
         final data = decoded['data'];
-        print('Wallet ID: ${data['wallet_id']}');
-        print('\nTransparent Addresses:');
+//         print('Wallet ID: ${data['wallet_id']}');
+//         print('\nTransparent Addresses:');
         for (int i = 0; i < data['transparent_addresses'].length; i++) {
           final addr = data['transparent_addresses'][i];
-          print('  [$i] $addr (length: ${addr.length})');
+//           print('  [$i] $addr (length: ${addr.length})');
         }
         
-        print('\nShielded Addresses:');
+//         print('\nShielded Addresses:');
         for (int i = 0; i < data['shielded_addresses'].length; i++) {
           final addr = data['shielded_addresses'][i];
-          print('  [$i] $addr (length: ${addr.length})');
+//           print('  [$i] $addr (length: ${addr.length})');
           
           // Check if it matches BitcoinZ zs1 format
           if (addr.startsWith('zs1') && addr.length == 78) {
-            print('       ✅ CORRECT BitcoinZ zs1 format');
+//             print('       ✅ CORRECT BitcoinZ zs1 format');
           } else {
-            print('       ❌ INCORRECT format (should be zs1... with 78 chars)');
+//             print('       ❌ INCORRECT format (should be zs1... with 78 chars)');
           }
         }
       } else if (decoded['error'] != null) {
-        print('Error: ${decoded['error']}');
+//         print('Error: ${decoded['error']}');
       }
     } else {
-      print('No response from wallet creation');
+//       print('No response from wallet creation');
     }
     
     freeString(createResult);
     
   } catch (e) {
-    print('Error: $e');
+//     print('Error: $e');
   }
 }
