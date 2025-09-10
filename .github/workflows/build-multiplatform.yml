@@ -79,14 +79,12 @@ jobs:
         export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
         
         # Build for all Android architectures
+        chmod +x .github/scripts/build-rust-android.sh
         .github/scripts/build-rust-android.sh
 
-    - name: 🔨 Generate Flutter Rust Bridge bindings
-      run: |
-        # Working in root directory
-        dart pub global activate flutter_rust_bridge_codegen
-        flutter_rust_bridge_codegen generate
-
+    # Flutter Rust Bridge bindings already generated and committed
+    # Skipping generation step to avoid package dependency issues
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -132,7 +130,7 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ env.RUST_VERSION }}
-        targets: aarch64-apple-ios,x86_64-apple-ios,aarch64-apple-ios-sim
+        targets: aarch64-apple-ios,x86_64-apple-ios
 
     - name: 📱 Set up Flutter
       uses: subosito/flutter-action@v2
@@ -174,12 +172,9 @@ jobs:
         # Working in root directory
         .github/scripts/build-rust-ios.sh
 
-    - name: 🔨 Generate Flutter Rust Bridge bindings
-      run: |
-        # Working in root directory
-        dart pub global activate flutter_rust_bridge_codegen
-        flutter_rust_bridge_codegen generate
-
+    # Flutter Rust Bridge bindings already generated and committed
+    # Skipping generation step to avoid package dependency issues
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -260,12 +255,9 @@ jobs:
         # Working in root directory
         .github/scripts/build-rust-macos.sh
 
-    - name: 🔨 Generate Flutter Rust Bridge bindings
-      run: |
-        # Working in root directory
-        dart pub global activate flutter_rust_bridge_codegen
-        flutter_rust_bridge_codegen generate
-
+    # Flutter Rust Bridge bindings already generated and committed
+    # Skipping generation step to avoid package dependency issues
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -349,12 +341,9 @@ jobs:
         # Working in root directory
         .github/scripts/build-rust-linux.sh
 
-    - name: 🔨 Generate Flutter Rust Bridge bindings
-      run: |
-        # Working in root directory
-        dart pub global activate flutter_rust_bridge_codegen
-        flutter_rust_bridge_codegen generate
-
+    # Flutter Rust Bridge bindings already generated and committed
+    # Skipping generation step to avoid package dependency issues
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -431,12 +420,9 @@ jobs:
         # Working in root directory
         .github/scripts/build-rust-windows.bat
 
-    - name: 🔨 Generate Flutter Rust Bridge bindings
-      run: |
-        # Working in root directory
-        dart pub global activate flutter_rust_bridge_codegen
-        flutter_rust_bridge_codegen generate
-
+    # Flutter Rust Bridge bindings already generated and committed
+    # Skipping generation step to avoid package dependency issues
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
