@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'dart:async';
 import '../../providers/wallet_provider.dart';
 import '../../providers/currency_provider.dart';
+import '../../providers/interface_provider.dart';
 import '../../utils/responsive.dart';
 import '../../widgets/transaction_success_dialog.dart';
 import '../../widgets/transaction_confirmation_dialog.dart';
@@ -1149,5 +1150,4 @@ class _SendScreenState extends State<SendScreen>
       ),
     );
   }
-}
 }

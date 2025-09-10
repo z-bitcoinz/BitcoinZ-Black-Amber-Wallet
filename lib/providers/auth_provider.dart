@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import '../services/storage_service.dart';
 import '../services/wallet_storage_service.dart';
+import '../utils/logger.dart' as app_logger;
 // import '../services/cli_wallet_detector.dart'; // Removed - CLI no longer used
 
 class AuthProvider with ChangeNotifier {
@@ -398,7 +399,7 @@ class AuthProvider with ChangeNotifier {
       final availableBiometrics = await _localAuth.getAvailableBiometrics();
       // Platform biometric type logging reduced to minimize log spam
       if (kDebugMode && Platform.isMacOS) {
-        print('🔒 macOS: Supports TouchID');
+        app_logger.Logger.auth('🔒 macOS: Supports TouchID');
       }
       
       return availableBiometrics.isNotEmpty;

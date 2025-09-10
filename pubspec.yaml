@@ -74,6 +74,10 @@ dependencies:
   flutter_local_notifications: ^19.4.1
   app_badge_plus: ^1.2.3
 
+  # Utilities
+  uuid: ^4.0.0
+  timezone: ^0.10.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -86,6 +90,9 @@ dev_dependencies:
   chalkdart: ^2.0.9
   cli_util: ^0.4.1
   mason_logger: ^0.2.11
+
+  # Testing
+  mockito: ^5.4.0
 
 flutter:
   uses-material-design: true
