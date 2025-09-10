@@ -1,0 +1,78 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rust
+rust/target/
+rust/Cargo.lock
+
+# Build artifacts
+*.so
+*.a
+*.dylib
+*.dll
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Claude.md and other development docs
+CLAUDE.md
+BUILD_NOTES.md
+SHIELDED_TRANSACTION_FIX_SUMMARY.md
+
+# Large binary files
+*.zip
+*.tar.gz
+*.aab
+*.apk
+*.ipa
+*.dmg
+*.exe
+*.msi
+
+# Android
+android/app/src/main/jniLibs/
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/app/outputs/
+
+# iOS
+ios/Runner.xcarchive/
+ios/Runner.xcworkspace/xcuserdata/
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/
+
+# macOS
+macos/Runner.xcworkspace/xcuserdata/
+macos/build/
+
+# Linux
+linux/build/
+
+# Windows
+windows/build/
