@@ -355,9 +355,11 @@ class _SeedPhraseVerificationScreenState extends State<SeedPhraseVerificationScr
                             ),
                           ),
                         ],
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
                 
                 // Action Button
                     Padding(
