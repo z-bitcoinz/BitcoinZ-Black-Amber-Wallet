@@ -491,9 +491,9 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                   ),
                 ),
               ),
-            );
-          },
-        ),
-      ),
-    );
+            ); // close return Padding
+          }, // close builder function  
+        ), // close Consumer
+      ), // close SafeArea body
+    ); // close Scaffold return
 }
