@@ -355,10 +355,12 @@ class _SeedPhraseVerificationScreenState extends State<SeedPhraseVerificationScr
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
-                    
-                    // Action Button
+                  ],
+                ),
+                
+                // Action Button
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: ResponsiveUtils.getVerticalPadding(context)),
                       child: SizedBox(

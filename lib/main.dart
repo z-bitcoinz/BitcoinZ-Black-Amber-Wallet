@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:logger/logger.dart';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
 
@@ -49,14 +48,10 @@ void main() async {
     });
   }
   
-  // Initialize logger
-  Logger.level = Level.info;
-  final logger = Logger();
-  
   try {
     // Initialize storage service first
     await StorageService.initialize();
-    logger.i('Storage service initialized: ${StorageService.storageType}');
+    app_logger.Logger.info('Storage service initialized: ${StorageService.storageType}');
     
     // Reset database if corrupted (especially important on macOS)
     // This ensures we start with a clean slate if there were authorization errors
@@ -64,33 +59,33 @@ void main() async {
       try {
         // Force reset to clean up any corrupted database files
         await DatabaseService.forceReset();
-        logger.i('🔄 Database reset completed for desktop platform');
+        app_logger.Logger.info('🔄 Database reset completed for desktop platform');
       } catch (e) {
-        logger.w('Database reset failed (may not exist yet): $e');
+        app_logger.Logger.warning('Database reset failed (may not exist yet): $e');
       }
     }
     
     // Initialize Rust bridge for native mempool monitoring
     try {
       await RustLib.init();
-      logger.i('🦀 Rust bridge initialized for mempool monitoring');
+      app_logger.Logger.info('🦀 Rust bridge initialized for mempool monitoring');
     } catch (e) {
       if (e.toString().contains('Should not initialize flutter_rust_bridge twice')) {
-        logger.i('🦀 Rust bridge already initialized');
+        app_logger.Logger.info('🦀 Rust bridge already initialized');
       } else {
-        logger.e('Failed to initialize Rust bridge: $e');
+        app_logger.Logger.error('Failed to initialize Rust bridge: $e');
       }
     }
     
     // Initialize BitcoinZ service
     await BitcoinZService.instance.initialize();
-    logger.i('BitcoinZ service initialized successfully');
+    app_logger.Logger.info('BitcoinZ service initialized successfully');
 
     // Initialize background notification service
     await BackgroundNotificationService.initialize();
-    logger.i('Background notification service initialized');
+    app_logger.Logger.info('Background notification service initialized');
   } catch (e) {
-    logger.e('Failed to initialize services: $e');
+    app_logger.Logger.error('Failed to initialize services: $e');
   }
   
   // Set preferred orientations for mobile-first approach
@@ -304,7 +299,6 @@ class BitcoinZWalletApp extends StatelessWidget {
     const primaryColor = Color(0xFFFFB800); // BitcoinZ golden orange
     const secondaryColor = Color(0xFF00D4AA); // BitcoinZ green
     const backgroundColor = Color(0xFF0F0F0F); // YouTube-style dark background
-    const surfaceColor = Color(0xFF181818); // YouTube-style surface
     
     return ThemeData(
       useMaterial3: true,
@@ -315,8 +309,6 @@ class BitcoinZWalletApp extends StatelessWidget {
         seedColor: primaryColor,
         brightness: Brightness.dark,
         secondary: secondaryColor,
-        surface: surfaceColor,
-        background: backgroundColor,
       ),
       // Professional typography system
       textTheme: const TextTheme(
@@ -455,7 +447,7 @@ class BitcoinZWalletApp extends StatelessWidget {
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         type: BottomNavigationBarType.fixed,
-        backgroundColor: surfaceColor,
+        backgroundColor: Color(0xFF181818),
         selectedItemColor: primaryColor,
         unselectedItemColor: Colors.grey,
         elevation: 8,
