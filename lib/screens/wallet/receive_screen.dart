@@ -315,11 +315,11 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                 ),
                               ),
                       ),
-                            
-                            SizedBox(height: ResponsiveUtils.isSmallScreen(context) ? 16 : 20),
-                            
-                            // Address Display
-                            Container(
+                      
+                      SizedBox(height: ResponsiveUtils.isSmallScreen(context) ? 16 : 20),
+                      
+                      // Address Display
+                      Container(
                               width: double.infinity,
                               padding: EdgeInsets.all(ResponsiveUtils.getHorizontalPadding(context) * 0.75),
                               decoration: BoxDecoration(
@@ -376,7 +376,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                 ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ),
                       
@@ -491,7 +491,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                   ),
                 ),
               ),
-            ); // close return Padding
+            ), // close return Padding
           }, // close builder function  
         ), // close Consumer
       ), // close SafeArea body
