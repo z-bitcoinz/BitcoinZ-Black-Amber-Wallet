@@ -487,7 +487,8 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                           ),
                         ],
                       ),
-                    ),
+                    ],
+                  ),
                 ),
               ),
             );
