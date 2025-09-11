@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:convert';
 import 'package:ffi/ffi.dart';
-import 'package:logger/logger.dart';
+import '../utils/logger.dart' as app_logger;
 import '../models/wallet_model.dart';
 import '../models/balance_model.dart';
 import '../models/transaction_model.dart';
@@ -53,7 +53,7 @@ typedef BitcoinZDestroyDart = Pointer<Utf8> Function();
 
 class BitcoinZService {
   static BitcoinZService? _instance;
-  static final Logger _logger = Logger();
+  // Using app logger for consistent logging
   
   late DynamicLibrary _lib;
   bool _initialized = false;
@@ -84,7 +84,7 @@ class BitcoinZService {
   /// Initialize the BitcoinZ service with mobile-first approach
   Future<void> initialize({String? serverUrl}) async {
     if (_initialized) {
-      _logger.i('BitcoinZ service already initialized');
+      app_logger.Logger.info('BitcoinZ service already initialized');
       return;
     }
 
@@ -136,9 +136,9 @@ class BitcoinZService {
       }
 
       _initialized = true;
-      _logger.i('BitcoinZ service initialized successfully');
+      app_logger.Logger.info('BitcoinZ service initialized successfully');
     } catch (e) {
-      _logger.e('Failed to initialize BitcoinZ service: $e');
+      app_logger.Logger.error('Failed to initialize BitcoinZ service: $e');
       rethrow;
     }
   }
@@ -178,22 +178,22 @@ class BitcoinZService {
       final walletModel = WalletModel.fromJson(result['data']);
       
       // Debug logging to track addresses received from Rust FFI
-      _logger.i('🔍 Flutter BitcoinZService.createWallet() - Received from Rust FFI:');
-      _logger.i('  walletId: ${walletModel.walletId}');
-      _logger.i('  transparent addresses: ${walletModel.transparentAddresses.length}');
+      app_logger.Logger.info('🔍 Flutter BitcoinZService.createWallet() - Received from Rust FFI:');
+      app_logger.Logger.info('  walletId: ${walletModel.walletId}');
+      app_logger.Logger.info('  transparent addresses: ${walletModel.transparentAddresses.length}');
       for (int i = 0; i < walletModel.transparentAddresses.length; i++) {
         final addr = walletModel.transparentAddresses[i];
-        _logger.i('    [$i]: "$addr" (${addr.length} chars)');
+        app_logger.Logger.info('    [$i]: "$addr" (${addr.length} chars)');
       }
-      _logger.i('  shielded addresses: ${walletModel.shieldedAddresses.length}');
+      app_logger.Logger.info('  shielded addresses: ${walletModel.shieldedAddresses.length}');
       for (int i = 0; i < walletModel.shieldedAddresses.length; i++) {
         final addr = walletModel.shieldedAddresses[i];
-        _logger.i('    [$i]: "$addr" (${addr.length} chars)');
+        app_logger.Logger.info('    [$i]: "$addr" (${addr.length} chars)');
       }
       
       return walletModel;
     } catch (e) {
-      _logger.e('Error creating wallet: $e');
+      app_logger.Logger.error('Error creating wallet: $e');
       rethrow;
     }
   }
@@ -216,22 +216,22 @@ class BitcoinZService {
       final walletModel = WalletModel.fromJson(result['data']);
       
       // Debug logging to track addresses received from Rust FFI  
-      _logger.i('🔍 Flutter BitcoinZService.restoreWallet() - Received from Rust FFI:');
-      _logger.i('  walletId: ${walletModel.walletId}');
-      _logger.i('  transparent addresses: ${walletModel.transparentAddresses.length}');
+      app_logger.Logger.info('🔍 Flutter BitcoinZService.restoreWallet() - Received from Rust FFI:');
+      app_logger.Logger.info('  walletId: ${walletModel.walletId}');
+      app_logger.Logger.info('  transparent addresses: ${walletModel.transparentAddresses.length}');
       for (int i = 0; i < walletModel.transparentAddresses.length; i++) {
         final addr = walletModel.transparentAddresses[i];
-        _logger.i('    [$i]: "$addr" (${addr.length} chars)');
+        app_logger.Logger.info('    [$i]: "$addr" (${addr.length} chars)');
       }
-      _logger.i('  shielded addresses: ${walletModel.shieldedAddresses.length}');
+      app_logger.Logger.info('  shielded addresses: ${walletModel.shieldedAddresses.length}');
       for (int i = 0; i < walletModel.shieldedAddresses.length; i++) {
         final addr = walletModel.shieldedAddresses[i];
-        _logger.i('    [$i]: "$addr" (${addr.length} chars)');
+        app_logger.Logger.info('    [$i]: "$addr" (${addr.length} chars)');
       }
       
       return walletModel;
     } catch (e) {
-      _logger.e('Error restoring wallet: $e');
+      app_logger.Logger.error('Error restoring wallet: $e');
       rethrow;
     }
   }
@@ -264,7 +264,7 @@ class BitcoinZService {
 
       return BalanceModel.fromJson(result['data']);
     } catch (e) {
-      _logger.e('Error getting balance: $e');
+      app_logger.Logger.error('Error getting balance: $e');
       rethrow;
     }
   }
@@ -286,7 +286,7 @@ class BitcoinZService {
         'shielded': List<String>.from(result['data']['shielded'] ?? []),
       };
     } catch (e) {
-      _logger.e('Error getting addresses: $e');
+      app_logger.Logger.error('Error getting addresses: $e');
       rethrow;
     }
   }
@@ -312,7 +312,7 @@ class BitcoinZService {
 
       return result['data']['address'];
     } catch (e) {
-      _logger.e('Error generating new address: $e');
+      app_logger.Logger.error('Error generating new address: $e');
       rethrow;
     }
   }
@@ -331,7 +331,7 @@ class BitcoinZService {
 
       return result['data'];
     } catch (e) {
-      _logger.e('Error syncing wallet: $e');
+      app_logger.Logger.error('Error syncing wallet: $e');
       rethrow;
     }
   }
@@ -350,7 +350,7 @@ class BitcoinZService {
 
       return result['data'];
     } catch (e) {
-      _logger.e('Error getting sync status: $e');
+      app_logger.Logger.error('Error getting sync status: $e');
       rethrow;
     }
   }
@@ -380,7 +380,7 @@ class BitcoinZService {
 
       return result['data'];
     } catch (e) {
-      _logger.e('Error sending transaction: $e');
+      app_logger.Logger.error('Error sending transaction: $e');
       rethrow;
     }
   }
@@ -400,7 +400,7 @@ class BitcoinZService {
       final transactions = List<Map<String, dynamic>>.from(result['data']['transactions'] ?? []);
       return transactions.map((tx) => TransactionModel.fromJson(tx)).toList();
     } catch (e) {
-      _logger.e('Error getting transactions: $e');
+      app_logger.Logger.error('Error getting transactions: $e');
       rethrow;
     }
   }
@@ -425,7 +425,7 @@ class BitcoinZService {
 
       return result['data']['encrypted'];
     } catch (e) {
-      _logger.e('Error encrypting message: $e');
+      app_logger.Logger.error('Error encrypting message: $e');
       rethrow;
     }
   }
@@ -447,7 +447,7 @@ class BitcoinZService {
 
       return result['data']['decrypted'];
     } catch (e) {
-      _logger.e('Error decrypting message: $e');
+      app_logger.Logger.error('Error decrypting message: $e');
       rethrow;
     }
   }
@@ -460,7 +460,7 @@ class BitcoinZService {
       
       return jsonDecode(responseStr) as Map<String, dynamic>;
     } catch (e) {
-      _logger.e('Error parsing response: $e');
+      app_logger.Logger.error('Error parsing response: $e');
       throw Exception('Failed to parse native response');
     }
   }
@@ -480,13 +480,13 @@ class BitcoinZService {
       final result = _parseResponse(resultPtr);
       
       if (!result['success']) {
-        _logger.w('Warning during wallet destruction: ${result['error']}');
+        app_logger.Logger.warning('Warning during wallet destruction: ${result['error']}');
       }
       
       _initialized = false;
-      _logger.i('BitcoinZ service destroyed');
+      app_logger.Logger.info('BitcoinZ service destroyed');
     } catch (e) {
-      _logger.e('Error destroying BitcoinZ service: $e');
+      app_logger.Logger.error('Error destroying BitcoinZ service: $e');
     }
   }
 }
