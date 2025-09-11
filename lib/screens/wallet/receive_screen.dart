@@ -311,7 +311,6 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                         textAlign: TextAlign.center,
                                       ),
                                     ],
-                                  ],
                                 ),
                               ),
                       ),
