@@ -452,9 +452,8 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                       setState(() {}); // Rebuild to update QR code
                                     },
                                   ),
+                                  SizedBox(height: ResponsiveUtils.isSmallScreen(context) ? 12 : 16),
                                 ],
-                                
-                                SizedBox(height: ResponsiveUtils.isSmallScreen(context) ? 12 : 16),
                                 
                                 // Info Text
                                 Container(

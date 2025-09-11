@@ -355,7 +355,6 @@ class _SeedPhraseVerificationScreenState extends State<SeedPhraseVerificationScr
                             ),
                           ),
                         ],
-                      ),
                     ),
                   ],
                 ),
