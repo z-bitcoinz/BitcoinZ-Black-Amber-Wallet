@@ -280,4 +280,4 @@ Download BitcoinZ Black Amber v0.8.1 today and join thousands of users worldwide
 [![GitHub stars](https://img.shields.io/github/stars/z-bitcoinz/BitcoinZ-black-amber.svg?style=social&label=Star)](https://github.com/z-bitcoinz/BitcoinZ-black-amber/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/z-bitcoinz/BitcoinZ-black-amber.svg?style=social&label=Fork)](https://github.com/z-bitcoinz/BitcoinZ-black-amber/network/members)
 
-</div>
+</div># CI Build Status - All syntax errors fixed
