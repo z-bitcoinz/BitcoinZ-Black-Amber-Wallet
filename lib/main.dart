@@ -277,12 +277,7 @@ class BitcoinZWalletApp extends StatelessWidget {
         foregroundColor: Colors.black,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-        ),
-      ),
+      // cardTheme: removed for compatibility with Flutter 3.32+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
@@ -422,13 +417,7 @@ class BitcoinZWalletApp extends StatelessWidget {
         foregroundColor: Colors.white,
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
-      cardTheme: CardThemeData(
-        elevation: 4,
-        color: surfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
-        ),
-      ),
+      // cardTheme: removed for compatibility with Flutter 3.32+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
