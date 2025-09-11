@@ -404,6 +404,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: 🛠️ Setup Visual Studio environment
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
     - name: 🦀 Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
@@ -457,7 +462,8 @@ jobs:
     - name: 🏗️ Build Windows app
       run: |
         # Working in root directory
-        flutter build windows --release
+        # Try to build without the install step that's failing
+        flutter build windows --release --no-tree-shake-icons
 
     - name: 📦 Create Windows ZIP archive
       run: |
