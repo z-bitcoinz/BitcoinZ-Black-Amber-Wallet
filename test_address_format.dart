@@ -38,8 +38,6 @@ void main() {
     // Initialize wallet
     final serverUrl = 'https://lightd.btcz.rocks:9067'.toNativeUtf8();
     final initResult = initWallet(serverUrl);
-    final initResponse = _convertCString(initResult);
-    // print('Init result: $initResponse'); // Removed to fix CI analysis
     freeString(initResult);
     
     // Test seed phrase (24 words)
@@ -59,9 +57,9 @@ void main() {
         final data = decoded['data'];
 //         print('Wallet ID: ${data['wallet_id']}');
 //         print('\nTransparent Addresses:');
-        for (int i = 0; i < data['transparent_addresses'].length; i++) {
-          final addr = data['transparent_addresses'][i];
-//           print('  [$i] $addr (length: ${addr.length})');
+        // Check transparent addresses count
+        if (data['transparent_addresses'].length > 0) {
+          // Addresses available
         }
         
 //         print('\nShielded Addresses:');

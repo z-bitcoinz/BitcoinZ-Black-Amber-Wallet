@@ -6,6 +6,7 @@ import 'package:mockito/annotations.dart';
 
 import 'package:bitcoinz_black_amber/providers/wallet_provider.dart';
 import 'package:bitcoinz_black_amber/providers/currency_provider.dart';
+import 'package:bitcoinz_black_amber/models/currency_model.dart';
 import 'package:bitcoinz_black_amber/screens/wallet/receive_screen.dart';
 import 'package:bitcoinz_black_amber/widgets/address_selector_widget.dart';
 import 'package:bitcoinz_black_amber/models/address_label.dart';
@@ -30,7 +31,7 @@ void main() {
       when(mockWalletProvider.getAddressByType(any)).thenReturn('test_address_1');
       when(mockWalletProvider.getAddressLabels(any)).thenAnswer((_) async => []);
       when(mockCurrencyProvider.selectedCurrency).thenReturn(
-        Currency(code: 'USD', name: 'US Dollar', symbol: '\$', rate: 1.0)
+        const Currency(code: 'USD', name: 'US Dollar', symbol: '\$', flag: '🇺🇸')
       );
     });
 
@@ -197,7 +198,7 @@ void main() {
       const expectedFormatted = 'bitcoinz...rstuvwxyz';
       
       final formatted = '${longAddress.substring(0, 8)}...${longAddress.substring(longAddress.length - 8)}';
-      expect(formatted, equals('bitcoinz...rstuvwxyz'));
+      expect(formatted, equals(expectedFormatted));
     });
   });
 
@@ -247,17 +248,3 @@ void main() {
   });
 }
 
-// Mock Currency class for testing
-class Currency {
-  final String code;
-  final String name;
-  final String symbol;
-  final double rate;
-
-  Currency({
-    required this.code,
-    required this.name,
-    required this.symbol,
-    required this.rate,
-  });
-}

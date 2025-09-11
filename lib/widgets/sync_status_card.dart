@@ -17,7 +17,6 @@ class _SyncStatusCardState extends State<SyncStatusCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _pulseAnimation;
-  bool _isExpanded = false;
   double _displayedProgress = 0.0; // UI-only monotonic progress tracking
   String _displayedETA = ''; // UI-only stable ETA tracking
   int _lastETAMinutes = 0; // Track ETA in minutes for monotonic decrease
@@ -260,7 +259,7 @@ class _SyncStatusCardState extends State<SyncStatusCard>
           // Use delayed display logic for sync UI
           shouldShow = _shouldShowSyncUI(provider);
           if (kDebugMode && shouldShow != provider.isSyncing) {
-            print('🎯 SYNC UI: ${shouldShow ? "Showing" : "Hiding"} sync UI (delay logic)');
+            if (kDebugMode) print('🎯 SYNC UI: ${shouldShow ? "Showing" : "Hiding"} sync UI (delay logic)');
           }
         } else {
           // Not syncing - cancel any pending delay and reset state
