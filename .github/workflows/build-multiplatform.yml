@@ -26,11 +26,11 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: ☕ Set up JDK 11
+    - name: ☕ Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '11'
+        java-version: '17'
 
     - name: 🦀 Install Rust
       uses: dtolnay/rust-toolchain@stable
@@ -293,8 +293,11 @@ jobs:
 
     - name: 📦 Create macOS ZIP archive
       run: |
-        # Working in root directory/build/macos/Build/Products/Release
-        zip -r BitcoinZ-Black-Amber-macOS.zip "BitcoinZ Black Amber.app"
+        cd build/macos/Build/Products/Release
+        # Find the actual app name and zip it
+        APP_NAME=$(ls -d *.app | head -1)
+        echo "Found app: $APP_NAME"
+        zip -r BitcoinZ-Black-Amber-macOS.zip "$APP_NAME"
 
     - name: 📤 Upload macOS app artifacts
       uses: actions/upload-artifact@v4

@@ -66,6 +66,9 @@ ios/Runner.xcworkspace/xcuserdata/
 ios/Pods/
 ios/.symlinks/
 ios/Flutter/
+!ios/Flutter/Debug.xcconfig
+!ios/Flutter/Release.xcconfig
+!ios/Flutter/AppFrameworkInfo.plist
 
 # macOS
 macos/Runner.xcworkspace/xcuserdata/
