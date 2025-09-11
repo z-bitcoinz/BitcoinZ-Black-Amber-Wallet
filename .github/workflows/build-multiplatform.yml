@@ -382,7 +382,7 @@ jobs:
 
     - name: 📦 Create Linux tar.gz archive
       run: |
-        # Working in root directory/build/linux/x64/release
+        cd build/linux/x64/release
         tar -czf BitcoinZ-Black-Amber-Linux.tar.gz bundle/
 
     - name: 📤 Upload Linux app artifacts
