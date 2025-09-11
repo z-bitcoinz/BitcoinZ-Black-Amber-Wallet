@@ -195,7 +195,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context) * 0.75),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
                           ),
                         ),
                         child: Row(
@@ -219,7 +219,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                         : 'Public transactions, faster and lower fees',
                                     style: TextStyle(
                                       fontSize: ResponsiveUtils.getBodyTextSize(context) * 0.85,
-                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ],
@@ -259,7 +259,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                           borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 10,
                               spreadRadius: 2,
                             ),
@@ -277,7 +277,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                 width: ResponsiveUtils.isSmallMobile(context) ? 200 : 250,
                                 height: ResponsiveUtils.isSmallMobile(context) ? 200 : 250,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  color: Colors.grey.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context) * 0.5),
                                 ),
                                 child: Column(
@@ -323,7 +323,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                               width: double.infinity,
                               padding: EdgeInsets.all(ResponsiveUtils.getHorizontalPadding(context) * 0.75),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context) * 0.5),
                               ),
                               child: Column(
@@ -332,7 +332,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                     'Your Address',
                                     style: TextStyle(
                                       fontSize: ResponsiveUtils.getBodyTextSize(context) * 0.9,
-                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                     ),
                                   ),
                                   SizedBox(height: ResponsiveUtils.isSmallScreen(context) ? 6 : 8),
@@ -344,10 +344,10 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                         vertical: ResponsiveUtils.isSmallScreen(context) ? 8 : 12,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.background,
+                                        color: Theme.of(context).colorScheme.surface,
                                         borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context) * 0.5),
                                         border: Border.all(
-                                          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Row(
@@ -439,7 +439,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                     decoration: InputDecoration(
                                       hintText: 'Add a note for this payment request',
                                       filled: true,
-                                      fillColor: Theme.of(context).colorScheme.background,
+                                      fillColor: Theme.of(context).colorScheme.surface,
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context) * 0.75),
                                       ),
@@ -460,7 +460,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                 Container(
                                   padding: EdgeInsets.all(ResponsiveUtils.getHorizontalPadding(context) * 0.75),
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(ResponsiveUtils.getCardBorderRadius(context) * 0.5),
                                   ),
                                   child: Row(
@@ -476,7 +476,7 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                                           'Adding amount and memo will include them in the QR code for easier payments.',
                                           style: TextStyle(
                                             fontSize: ResponsiveUtils.getBodyTextSize(context) * 0.8,
-                                            color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
                                           ),
                                         ),
                                       ),
@@ -488,7 +488,6 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
