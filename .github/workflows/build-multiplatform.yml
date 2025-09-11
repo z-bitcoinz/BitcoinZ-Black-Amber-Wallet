@@ -91,6 +91,11 @@ jobs:
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
     
+    - name: ✅ Verify Rust libraries
+      run: |
+        chmod +x .github/scripts/verify-rust-libs.sh
+        .github/scripts/verify-rust-libs.sh
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -187,6 +192,11 @@ jobs:
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
     
+    - name: ✅ Verify Rust libraries
+      run: |
+        chmod +x .github/scripts/verify-rust-libs.sh
+        .github/scripts/verify-rust-libs.sh
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -275,6 +285,11 @@ jobs:
 
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
+    
+    - name: ✅ Verify Rust libraries
+      run: |
+        chmod +x .github/scripts/verify-rust-libs.sh
+        .github/scripts/verify-rust-libs.sh
     
     - name: 📦 Get Flutter dependencies
       run: |
@@ -365,6 +380,11 @@ jobs:
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
     
+    - name: ✅ Verify Rust libraries
+      run: |
+        chmod +x .github/scripts/verify-rust-libs.sh
+        .github/scripts/verify-rust-libs.sh
+    
     - name: 📦 Get Flutter dependencies
       run: |
         # Working in root directory
@@ -448,6 +468,11 @@ jobs:
 
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
+    
+    - name: ✅ Verify Rust libraries
+      run: |
+        chmod +x .github/scripts/verify-rust-libs.sh
+        .github/scripts/verify-rust-libs.sh
     
     - name: 📦 Get Flutter dependencies
       run: |
