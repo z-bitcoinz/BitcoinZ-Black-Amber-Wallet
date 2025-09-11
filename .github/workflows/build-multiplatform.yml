@@ -207,6 +207,11 @@ jobs:
         # Working in root directory
         flutter analyze --no-fatal-infos --no-fatal-warnings || true
 
+    - name: 🔧 Verify iOS library linking
+      run: |
+        chmod +x .github/scripts/fix-ios-library-bundle.sh
+        .github/scripts/fix-ios-library-bundle.sh
+
     - name: 🏗️ Build iOS app (no codesign)
       run: |
         # Working in root directory
@@ -409,6 +414,11 @@ jobs:
       run: |
         # Working in root directory
         flutter build linux --release
+
+    - name: 🔧 Fix Linux library bundling
+      run: |
+        chmod +x .github/scripts/fix-linux-library-bundle.sh
+        .github/scripts/fix-linux-library-bundle.sh
 
     - name: 📦 Create Linux tar.gz archive
       run: |
