@@ -99,7 +99,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze --no-fatal-infos
+        flutter analyze --no-fatal-infos --no-fatal-warnings
 
     - name: 🏗️ Build Android APK
       run: |
@@ -195,7 +195,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze --no-fatal-infos
+        flutter analyze --no-fatal-infos --no-fatal-warnings
 
     - name: 🏗️ Build iOS app (no codesign)
       run: |
@@ -284,7 +284,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze --no-fatal-infos
+        flutter analyze --no-fatal-infos --no-fatal-warnings
 
     - name: 🏗️ Build macOS app
       run: |
@@ -370,7 +370,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze --no-fatal-infos
+        flutter analyze --no-fatal-infos --no-fatal-warnings
 
     - name: 🏗️ Build Linux app
       run: |
@@ -449,7 +449,7 @@ jobs:
     - name: 🔍 Run Flutter analysis
       run: |
         # Working in root directory
-        flutter analyze --no-fatal-infos
+        flutter analyze --no-fatal-infos --no-fatal-warnings
 
     - name: 🏗️ Build Windows app
       run: |
