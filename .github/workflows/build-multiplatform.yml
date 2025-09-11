@@ -306,6 +306,11 @@ jobs:
         # Working in root directory
         flutter build macos --release
 
+    - name: 🔧 Fix macOS library bundling
+      run: |
+        chmod +x .github/scripts/fix-macos-library-bundle.sh
+        .github/scripts/fix-macos-library-bundle.sh
+
     - name: 📦 Create macOS ZIP archive
       run: |
         cd build/macos/Build/Products/Release
