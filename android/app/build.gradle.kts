@@ -32,10 +32,8 @@ android {
         versionName = flutter.versionName
 
         // Configure native libraries support for FFI
-        ndk {
-            // Specify which native architectures to build for
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
-        }
+        // Note: abiFilters removed to allow --split-per-abi in build commands
+        // The architectures are still supported via the jniLibs directories
     }
 
     buildTypes {
