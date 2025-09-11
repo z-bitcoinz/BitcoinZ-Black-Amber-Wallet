@@ -138,7 +138,6 @@ class _ReceiveScreenState extends State<ReceiveScreen>
   }
   
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -489,8 +488,6 @@ class _ReceiveScreenState extends State<ReceiveScreen>
                           ),
                         ],
                       ),
-                      
-                      
                       const SizedBox(height: 24),
                     ],
                   ),
