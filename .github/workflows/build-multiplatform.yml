@@ -395,6 +395,11 @@ jobs:
         # Working in root directory
         flutter analyze --no-fatal-infos --no-fatal-warnings || true
 
+    - name: 🔧 Setup native assets for Linux
+      run: |
+        chmod +x .github/scripts/setup-native-assets.sh
+        .github/scripts/setup-native-assets.sh
+
     - name: 🏗️ Build Linux app
       run: |
         # Working in root directory
@@ -483,6 +488,10 @@ jobs:
       run: |
         # Working in root directory
         flutter analyze --no-fatal-infos --no-fatal-warnings || true
+
+    - name: 🔧 Setup native assets for Windows
+      run: |
+        .github/scripts/setup-native-assets.sh
 
     - name: 🏗️ Build Windows app
       run: |
