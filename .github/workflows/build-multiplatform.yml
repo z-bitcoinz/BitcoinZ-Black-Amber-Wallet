@@ -516,7 +516,8 @@ jobs:
 
     - name: 📦 Create Windows ZIP archive
       run: |
-        # Working in root directory/build/windows/x64/runner/Release
+        # Navigate to the Release directory and create the ZIP
+        cd build/windows/x64/runner/Release
         7z a -tzip BitcoinZ-Black-Amber-Windows.zip *
 
     - name: 📤 Upload Windows app artifacts
