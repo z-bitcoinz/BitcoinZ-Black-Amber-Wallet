@@ -13,6 +13,7 @@ import '../services/database_service.dart';
 import '../services/wallet_storage_service.dart';
 import '../src/rust/api.dart' as rust_api;
 import '../src/rust/frb_generated.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import '../utils/logger.dart';
 
 /// Pending transaction data for tracking change amounts
@@ -105,10 +106,18 @@ class BitcoinzRustService {
       // Check if bridge is already initialized (done in main.dart)
       if (!_bridgeInitialized) {
         try {
-          Logger.rust('ANDROID: Attempting to load Rust native library...');
-          await RustLib.init();
+          Logger.rust('Attempting to load Rust native library...');
+          // Bridge should already be initialized in main.dart with proper platform handling
+          // This is just a fallback
+          if (Platform.isMacOS) {
+            await RustLib.init(
+              externalLibrary: ExternalLibrary.open('libbitcoinz_wallet_rust.dylib'),
+            );
+          } else {
+            await RustLib.init();
+          }
           _bridgeInitialized = true;
-          Logger.rust('Rust bridge initialized successfully on Android');
+          Logger.rust('Rust bridge initialized successfully on ${Platform.operatingSystem}');
         } catch (e) {
           // Bridge might already be initialized from main.dart
           if (e.toString().contains('Should not initialize flutter_rust_bridge twice')) {
@@ -116,7 +125,7 @@ class BitcoinzRustService {
             Logger.rust('Rust bridge already initialized');
           } else {
             if (kDebugMode) {
-              Logger.rust('ANDROID: Failed to load Rust library - native .so files may not be loading', level: LogLevel.error);
+              Logger.rust('Failed to load Rust library - native files may not be loading', level: LogLevel.error);
             }
             rethrow;
           }

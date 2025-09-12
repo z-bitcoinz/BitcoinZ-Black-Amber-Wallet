@@ -20,6 +20,7 @@ import 'services/bitcoinz_service.dart';
 import 'services/storage_service.dart';
 import 'services/database_service.dart';
 import 'src/rust/frb_generated.dart';
+import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +68,15 @@ void main() async {
     
     // Initialize Rust bridge for native mempool monitoring
     try {
-      await RustLib.init();
+      // For macOS, the library is in the Frameworks directory
+      // For other platforms, it uses the default location
+      if (Platform.isMacOS) {
+        await RustLib.init(
+          externalLibrary: ExternalLibrary.open('libbitcoinz_wallet_rust.dylib'),
+        );
+      } else {
+        await RustLib.init();
+      }
       app_logger.Logger.info('🦀 Rust bridge initialized for mempool monitoring');
     } catch (e) {
       if (e.toString().contains('Should not initialize flutter_rust_bridge twice')) {
