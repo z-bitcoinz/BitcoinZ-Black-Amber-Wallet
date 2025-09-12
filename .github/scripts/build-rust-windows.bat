@@ -38,11 +38,29 @@ if errorlevel 1 (
     exit /b 1
 )
 
+REM Also copy to native_assets directory for Flutter bundling
+set NATIVE_ASSETS_DIR=..\build\native_assets\windows
+if not exist "%NATIVE_ASSETS_DIR%" mkdir "%NATIVE_ASSETS_DIR%"
+
+echo 📦 Copying DLL to native_assets for Flutter bundling...
+copy "target\%TARGET%\release\bitcoinz_wallet_rust.dll" "%NATIVE_ASSETS_DIR%\"
+if errorlevel 1 (
+    echo ⚠️  Failed to copy to native_assets (may be created during build)
+) else (
+    echo ✅ Copied DLL to native_assets
+)
+
 echo 🎉 Windows Rust build completed!
 echo 📁 Libraries copied to: %WINDOWS_LIBS_DIR%\
+echo 📁 And to: %NATIVE_ASSETS_DIR%\
 
 REM Display library info
 echo 📊 Library files:
 dir /s "%WINDOWS_LIBS_DIR%\bitcoinz_wallet_rust.*"
+if exist "%NATIVE_ASSETS_DIR%\bitcoinz_wallet_rust.dll" (
+    echo.
+    echo 📊 Native assets:
+    dir "%NATIVE_ASSETS_DIR%\bitcoinz_wallet_rust.dll"
+)
 
 echo ✅ Windows build successful!

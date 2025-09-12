@@ -506,7 +506,7 @@ jobs:
 
     - name: 🔧 Setup native assets for Windows
       run: |
-        .github/scripts/setup-native-assets.sh
+        .github\scripts\setup-native-assets-windows.bat
 
     - name: 🏗️ Build Windows app
       run: |
