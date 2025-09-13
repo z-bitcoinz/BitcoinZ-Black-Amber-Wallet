@@ -575,27 +575,17 @@ jobs:
       id: msix_build
       shell: cmd
       run: |
-        REM Install MSIX package tool
+        REM Install MSIX package tool dependencies
         flutter pub get
-        REM Create MSIX installer
-        echo Creating MSIX installer...
-        flutter pub run msix:create
-        if %ERRORLEVEL% EQU 0 (
-          echo msix_created=true >> %GITHUB_OUTPUT%
-          echo ✅ MSIX installer created successfully
-          REM Find and copy MSIX to Release folder
-          echo Looking for MSIX files...
-          dir build\windows\*.msix 2>nul
-          if exist build\windows\*.msix (
-            echo Copying MSIX to Release folder...
-            copy build\windows\*.msix build\windows\x64\runner\Release\
-            dir build\windows\x64\runner\Release\*.msix
-          ) else (
-            echo No MSIX file found in build\windows\
-          )
-        ) else (
-          echo msix_created=false >> %GITHUB_OUTPUT%
-          echo ⚠️ MSIX creation failed with error level %ERRORLEVEL%
+        REM Try to create MSIX installer
+        flutter pub run msix:create || (
+          echo MSIX creation failed, continuing with ZIP only
+          exit /b 0
+        )
+        REM If MSIX was created, copy it to Release folder
+        if exist build\windows\*.msix (
+          echo MSIX file found, copying to Release folder
+          copy build\windows\*.msix build\windows\x64\runner\Release\
         )
       continue-on-error: true
 
