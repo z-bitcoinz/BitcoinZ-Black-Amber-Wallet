@@ -70,15 +70,17 @@ echo "📱 Building for ARM32 (armv7-linux-androideabi)..."
 cargo build --target armv7-linux-androideabi --release
 cp target/armv7-linux-androideabi/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/armeabi-v7a/
 
-# Build for x86_64 (emulators)
-echo "🖥️  Building for x86_64 (x86_64-linux-android)..."
-cargo build --target x86_64-linux-android --release
-cp target/x86_64-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/x86_64/
-
-# Build for x86 (older emulators)
-echo "🖥️  Building for x86 (i686-linux-android)..."
-cargo build --target i686-linux-android --release
-cp target/i686-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/x86/
+# Skip x86 architectures to reduce APK size
+# x86/x86_64 are rarely used on real devices (< 1% of Android devices)
+# Uncomment below if you need x86 support for emulators:
+#
+# echo "🖥️  Building for x86_64 (x86_64-linux-android)..."
+# cargo build --target x86_64-linux-android --release
+# cp target/x86_64-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/x86_64/
+#
+# echo "🖥️  Building for x86 (i686-linux-android)..."
+# cargo build --target i686-linux-android --release
+# cp target/i686-linux-android/release/libbitcoinz_wallet_rust.so ../android/app/src/main/jniLibs/x86/
 
 cd ../..
 
