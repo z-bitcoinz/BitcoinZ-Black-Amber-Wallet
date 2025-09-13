@@ -483,9 +483,9 @@ jobs:
       with:
         name: linux-app
         path: |
-          dist/*.deb
-          dist/*.rpm
-          dist/*.AppImage
+          dist/**/*.deb
+          dist/**/*.rpm
+          dist/**/*.AppImage
           build/linux/x64/release/BitcoinZ-Black-Amber-Linux.tar.gz
 
   # ================================
