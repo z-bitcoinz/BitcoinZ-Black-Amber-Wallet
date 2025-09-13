@@ -572,14 +572,23 @@ jobs:
         flutter build windows --release --no-tree-shake-icons
 
     - name: 📦 Build Windows MSIX installer
+      id: msix_build
       run: |
         # Install MSIX package tool
         flutter pub get
         # Create MSIX installer
-        flutter pub run msix:create
+        if flutter pub run msix:create; then
+          echo "msix_created=true" >> $GITHUB_OUTPUT
+          echo "✅ MSIX installer created successfully"
+          # Find and display MSIX file
+          dir build\windows\x64\runner\Release\*.msix 2>nul || dir build\windows\*.msix 2>nul || echo "MSIX file location unclear"
+        else
+          echo "msix_created=false" >> $GITHUB_OUTPUT
+          echo "⚠️ MSIX creation failed, will use ZIP fallback"
+        fi
       continue-on-error: true
 
-    - name: 📦 Create Windows ZIP archive (fallback)
+    - name: 📦 Create Windows ZIP archive
       run: |
         # Navigate to the Release directory and create the ZIP
         cd build/windows/x64/runner/Release
@@ -589,9 +598,17 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: windows-app
+        path: build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows.zip
+        if-no-files-found: error
+    
+    - name: 📤 Upload Windows MSIX installer (if created)
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-msix
         path: |
           build/windows/x64/runner/Release/*.msix
-          build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows.zip
+          build/windows/*.msix
+        if-no-files-found: ignore
 
   # ================================
   # RELEASE CREATION
@@ -619,8 +636,8 @@ jobs:
           artifacts/linux-app/*.rpm
           artifacts/linux-app/*.AppImage
           artifacts/linux-app/*.tar.gz
-          artifacts/windows-app/*.msix
           artifacts/windows-app/*.zip
+          artifacts/windows-msix/*.msix
         body: |
           ## 🎉 BitcoinZ Black Amber Release
           
