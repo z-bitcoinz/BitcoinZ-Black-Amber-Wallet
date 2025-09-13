@@ -426,6 +426,23 @@ jobs:
       run: |
         dart pub global activate flutter_distributor
 
+    - name: 🔍 Verify Rust library is in bundle
+      run: |
+        echo "Checking for Rust library in bundle..."
+        ls -lh build/linux/x64/release/bundle/lib/*.so || echo "No .so files in bundle/lib"
+        if [ ! -f "build/linux/x64/release/bundle/lib/libbitcoinz_wallet_rust.so" ]; then
+          echo "⚠️ WARNING: Rust library not found in bundle!"
+          echo "Attempting to copy from linux/ directory..."
+          if [ -f "linux/libbitcoinz_wallet_rust.so" ]; then
+            cp "linux/libbitcoinz_wallet_rust.so" "build/linux/x64/release/bundle/lib/"
+            echo "✅ Copied Rust library to bundle"
+          else
+            echo "❌ ERROR: Rust library not found anywhere!"
+          fi
+        fi
+        echo "Final bundle lib contents:"
+        ls -lh build/linux/x64/release/bundle/lib/
+
     - name: 📦 Build Linux packages
       run: |
         # Build Debian package
