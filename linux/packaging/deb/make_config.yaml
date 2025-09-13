@@ -13,6 +13,8 @@ dependencies:
   - libgtk-3-0
   - libblkid1
   - liblzma5
+prebuild_scripts:
+  - bash linux/packaging/pre_build.sh
 postinstall_scripts:
   - echo "BitcoinZ Black Amber installed successfully!"
 postuninstall_scripts:

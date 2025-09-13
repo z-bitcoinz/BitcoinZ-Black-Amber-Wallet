@@ -15,3 +15,5 @@ requires:
   - gtk3
   - libblkid
   - xz-libs
+prebuild_scripts:
+  - bash linux/packaging/pre_build.sh
