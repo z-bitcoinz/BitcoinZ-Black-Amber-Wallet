@@ -578,16 +578,24 @@ jobs:
         REM Install MSIX package tool
         flutter pub get
         REM Create MSIX installer
+        echo Creating MSIX installer...
         flutter pub run msix:create
         if %ERRORLEVEL% EQU 0 (
           echo msix_created=true >> %GITHUB_OUTPUT%
           echo ✅ MSIX installer created successfully
-          REM Copy MSIX to Release folder so it's included in ZIP
-          copy build\windows\*.msix build\windows\x64\runner\Release\ 2>nul
-          dir build\windows\x64\runner\Release\*.msix
+          REM Find and copy MSIX to Release folder
+          echo Looking for MSIX files...
+          dir build\windows\*.msix 2>nul
+          if exist build\windows\*.msix (
+            echo Copying MSIX to Release folder...
+            copy build\windows\*.msix build\windows\x64\runner\Release\
+            dir build\windows\x64\runner\Release\*.msix
+          ) else (
+            echo No MSIX file found in build\windows\
+          )
         ) else (
           echo msix_created=false >> %GITHUB_OUTPUT%
-          echo ⚠️ MSIX creation failed, will use ZIP fallback
+          echo ⚠️ MSIX creation failed with error level %ERRORLEVEL%
         )
       continue-on-error: true
 
