@@ -582,7 +582,9 @@ jobs:
         if %ERRORLEVEL% EQU 0 (
           echo msix_created=true >> %GITHUB_OUTPUT%
           echo ✅ MSIX installer created successfully
-          dir build\windows\x64\runner\Release\*.msix 2>nul || dir build\windows\*.msix 2>nul || echo MSIX file location unclear
+          REM Copy MSIX to Release folder so it's included in ZIP
+          copy build\windows\*.msix build\windows\x64\runner\Release\ 2>nul
+          dir build\windows\x64\runner\Release\*.msix
         ) else (
           echo msix_created=false >> %GITHUB_OUTPUT%
           echo ⚠️ MSIX creation failed, will use ZIP fallback
@@ -591,7 +593,7 @@ jobs:
 
     - name: 📦 Create Windows ZIP archive
       run: |
-        # Navigate to the Release directory and create the ZIP
+        # Navigate to the Release directory and create the ZIP (including MSIX if present)
         cd build/windows/x64/runner/Release
         7z a -tzip BitcoinZ-Black-Amber-Windows.zip *
 
