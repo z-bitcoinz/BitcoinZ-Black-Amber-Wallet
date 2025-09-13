@@ -1,0 +1,9 @@
+# AppImage configuration
+display_name: BitcoinZ Black Amber
+icon: assets/app_icon/app_icon.png
+generic_name: BitcoinZ Wallet
+categories: Finance;Network;
+startup_notify: true
+actions:
+  - name: New Window
+    label: Open New Window

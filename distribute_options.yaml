@@ -1,0 +1,29 @@
+# Flutter Distributor configuration for Linux packages
+output: dist/
+releases:
+  - name: linux-deb
+    jobs:
+      - name: linux-deb
+        package:
+          platform: linux
+          target: deb
+          build_args:
+            release: true
+        
+  - name: linux-rpm
+    jobs:
+      - name: linux-rpm
+        package:
+          platform: linux
+          target: rpm
+          build_args:
+            release: true
+            
+  - name: linux-appimage
+    jobs:
+      - name: linux-appimage
+        package:
+          platform: linux
+          target: appimage
+          build_args:
+            release: true

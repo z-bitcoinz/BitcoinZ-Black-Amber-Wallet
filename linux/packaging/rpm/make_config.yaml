@@ -1,0 +1,17 @@
+# RPM package configuration
+display_name: BitcoinZ Black Amber
+package_name: bitcoinz-black-amber
+maintainer:
+  name: BitcoinZ Community
+  email: support@btcz.rocks
+icon: assets/app_icon/app_icon.png
+summary: Secure BitcoinZ cryptocurrency wallet
+group: Applications/Internet
+vendor: BitcoinZ Community
+packager: BitcoinZ Development Team
+license: MIT
+url: https://btcz.rocks
+requires:
+  - gtk3
+  - libblkid
+  - xz-libs

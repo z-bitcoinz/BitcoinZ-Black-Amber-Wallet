@@ -93,6 +93,10 @@ dev_dependencies:
 
   # Testing
   mockito: ^5.4.0
+  
+  # Packaging and distribution
+  msix: ^3.16.0
+  flutter_distributor: ^0.0.2
 
 flutter:
   uses-material-design: true
@@ -119,3 +123,15 @@ icons_launcher:
       enable: true
     linux:
       enable: true
+
+# Windows MSIX installer configuration
+msix_config:
+  display_name: BitcoinZ Black Amber
+  publisher_display_name: BitcoinZ Community
+  identity_name: com.bitcoinz.wallet
+  msix_version: 1.0.0.0
+  logo_path: assets/app_icon/app_icon.png
+  capabilities: internetClient, privateNetworkClientServer
+  languages: en-us
+  windows_build_args: --release
+  store: false  # Set to true for Windows Store submission

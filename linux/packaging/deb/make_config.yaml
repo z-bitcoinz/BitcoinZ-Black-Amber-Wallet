@@ -1,0 +1,19 @@
+# Debian package configuration
+display_name: BitcoinZ Black Amber
+package_name: bitcoinz-black-amber
+maintainer:
+  name: BitcoinZ Community
+  email: support@btcz.rocks
+priority: optional
+section: utils
+essential: false
+icon: assets/app_icon/app_icon.png
+installed_size: 150000
+dependencies:
+  - libgtk-3-0
+  - libblkid1
+  - liblzma5
+postinstall_scripts:
+  - echo "BitcoinZ Black Amber installed successfully!"
+postuninstall_scripts:
+  - echo "BitcoinZ Black Amber removed."
