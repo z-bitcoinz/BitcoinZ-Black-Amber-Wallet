@@ -187,7 +187,8 @@ jobs:
     - name: 🔨 Build Rust libraries for iOS
       run: |
         # Working in root directory
-        .github/scripts/build-rust-ios.sh
+        # Use the new script that builds from correct rust directory
+        ./scripts/build_rust_ios.sh
 
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
