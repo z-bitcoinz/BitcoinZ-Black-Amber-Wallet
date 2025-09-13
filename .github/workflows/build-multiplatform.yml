@@ -573,19 +573,20 @@ jobs:
 
     - name: 📦 Build Windows MSIX installer
       id: msix_build
+      shell: cmd
       run: |
-        # Install MSIX package tool
+        REM Install MSIX package tool
         flutter pub get
-        # Create MSIX installer
-        if flutter pub run msix:create; then
-          echo "msix_created=true" >> $GITHUB_OUTPUT
-          echo "✅ MSIX installer created successfully"
-          # Find and display MSIX file
-          dir build\windows\x64\runner\Release\*.msix 2>nul || dir build\windows\*.msix 2>nul || echo "MSIX file location unclear"
-        else
-          echo "msix_created=false" >> $GITHUB_OUTPUT
-          echo "⚠️ MSIX creation failed, will use ZIP fallback"
-        fi
+        REM Create MSIX installer
+        flutter pub run msix:create
+        if %ERRORLEVEL% EQU 0 (
+          echo msix_created=true >> %GITHUB_OUTPUT%
+          echo ✅ MSIX installer created successfully
+          dir build\windows\x64\runner\Release\*.msix 2>nul || dir build\windows\*.msix 2>nul || echo MSIX file location unclear
+        ) else (
+          echo msix_created=false >> %GITHUB_OUTPUT%
+          echo ⚠️ MSIX creation failed, will use ZIP fallback
+        )
       continue-on-error: true
 
     - name: 📦 Create Windows ZIP archive
