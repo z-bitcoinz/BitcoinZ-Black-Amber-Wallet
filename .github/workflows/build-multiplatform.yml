@@ -575,8 +575,8 @@ jobs:
       run: |
         # Install MSIX package tool
         flutter pub get
-        # Create MSIX installer
-        flutter pub run msix:create
+        # Create MSIX installer (skip certificate installation for CI)
+        flutter pub run msix:create --install-certificate false
         # Copy MSIX to Release folder if created
         if (Test-Path "build\windows\*.msix") {
           Copy-Item "build\windows\*.msix" "build\windows\x64\runner\Release\"
