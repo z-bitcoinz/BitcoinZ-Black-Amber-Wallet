@@ -577,19 +577,22 @@ jobs:
         flutter pub get
         # Create MSIX installer (skip certificate installation for CI)
         flutter pub run msix:create --install-certificate false
-        # MSIX stays in build/windows/ directory
-        if (Test-Path "build\windows\*.msix") {
+        # Check where MSIX was created
+        if (Test-Path "build\windows\x64\runner\Release\*.msix") {
           Write-Host "MSIX installer created successfully"
-          Get-ChildItem "build\windows\*.msix" | ForEach-Object { Write-Host "Found: $($_.Name)" }
+          Get-ChildItem "build\windows\x64\runner\Release\*.msix" | ForEach-Object { Write-Host "Found: $($_.Name)" }
         }
       continue-on-error: true
 
     - name: 📦 Create Windows Portable ZIP
       run: |
+        # First, move MSIX out of Release folder if it exists
+        if (Test-Path "build\windows\x64\runner\Release\*.msix") {
+          Move-Item "build\windows\x64\runner\Release\*.msix" "build\windows\" -Force
+          Write-Host "Moved MSIX out of Release folder"
+        }
         # Navigate to the Release directory and create portable ZIP (no installer)
         cd build/windows/x64/runner/Release
-        # Remove any MSIX files that might be here
-        Remove-Item *.msix -ErrorAction SilentlyContinue
         7z a -tzip BitcoinZ-Black-Amber-Windows-Portable.zip *
         Write-Host "Created portable ZIP (no installer)"
 
@@ -598,7 +601,7 @@ jobs:
         # Create installer ZIP with just MSIX file
         if (Test-Path "build/windows/*.msix") {
           $msixFile = Get-ChildItem "build/windows/*.msix" | Select-Object -First 1
-          # Create ZIP with MSIX in root (use -j to junk paths)
+          # Create ZIP with MSIX in root
           7z a -tzip BitcoinZ-Black-Amber-Windows-Installer.zip $msixFile.FullName
           Write-Host "Created installer ZIP with MSIX"
         } else {
