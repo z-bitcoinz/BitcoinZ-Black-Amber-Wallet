@@ -29,8 +29,10 @@ if command -v create-dmg &> /dev/null; then
     rm -rf "$DMG_TEMP"
     mkdir "$DMG_TEMP"
     
-    # Copy app to temp directory
-    cp -R "$APP_NAME" "$DMG_TEMP/"
+    # Copy app to temp directory using ditto to preserve all attributes
+    ditto "$APP_NAME" "$DMG_TEMP/$APP_NAME"
+    # Clear any extended attributes that might cause issues
+    xattr -cr "$DMG_TEMP/$APP_NAME"
     
     # Add instruction text file as visual cue
     echo "➜ Drag BitcoinZ Black Amber to Applications folder to install" > "$DMG_TEMP/Install Instructions.txt"
@@ -71,8 +73,10 @@ else
     rm -rf "$DMG_TEMP"
     mkdir "$DMG_TEMP"
     
-    # Copy app to temp directory
-    cp -R "$APP_NAME" "$DMG_TEMP/"
+    # Copy app to temp directory using ditto to preserve all attributes
+    ditto "$APP_NAME" "$DMG_TEMP/$APP_NAME"
+    # Clear any extended attributes that might cause issues
+    xattr -cr "$DMG_TEMP/$APP_NAME"
     
     # Create Applications symlink
     ln -s /Applications "$DMG_TEMP/Applications"
