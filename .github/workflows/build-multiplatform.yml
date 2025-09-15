@@ -572,21 +572,16 @@ jobs:
         flutter build windows --release --no-tree-shake-icons
 
     - name: 📦 Build Windows MSIX installer
-      id: msix_build
-      shell: cmd
       run: |
-        REM Install MSIX package tool dependencies
+        # Install MSIX package tool
         flutter pub get
-        REM Try to create MSIX installer
-        flutter pub run msix:create || (
-          echo MSIX creation failed, continuing with ZIP only
-          exit /b 0
-        )
-        REM If MSIX was created, copy it to Release folder
-        if exist build\windows\*.msix (
-          echo MSIX file found, copying to Release folder
-          copy build\windows\*.msix build\windows\x64\runner\Release\
-        )
+        # Create MSIX installer
+        flutter pub run msix:create
+        # Copy MSIX to Release folder if created
+        if (Test-Path "build\windows\*.msix") {
+          Copy-Item "build\windows\*.msix" "build\windows\x64\runner\Release\"
+          Write-Host "MSIX installer copied to Release folder"
+        }
       continue-on-error: true
 
     - name: 📦 Create Windows ZIP archive
