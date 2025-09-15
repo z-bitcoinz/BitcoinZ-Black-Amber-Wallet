@@ -577,33 +577,47 @@ jobs:
         flutter pub get
         # Create MSIX installer (skip certificate installation for CI)
         flutter pub run msix:create --install-certificate false
-        # Copy MSIX to Release folder if created
+        # MSIX stays in build/windows/ directory
         if (Test-Path "build\windows\*.msix") {
-          Copy-Item "build\windows\*.msix" "build\windows\x64\runner\Release\"
-          Write-Host "MSIX installer copied to Release folder"
+          Write-Host "MSIX installer created successfully"
+          Get-ChildItem "build\windows\*.msix" | ForEach-Object { Write-Host "Found: $($_.Name)" }
         }
       continue-on-error: true
 
-    - name: 📦 Create Windows ZIP archive
+    - name: 📦 Create Windows Portable ZIP
       run: |
-        # Navigate to the Release directory and create the ZIP (including MSIX if present)
+        # Navigate to the Release directory and create portable ZIP (no installer)
         cd build/windows/x64/runner/Release
-        7z a -tzip BitcoinZ-Black-Amber-Windows.zip *
+        # Remove any MSIX files that might be here
+        Remove-Item *.msix -ErrorAction SilentlyContinue
+        7z a -tzip BitcoinZ-Black-Amber-Windows-Portable.zip *
+        Write-Host "Created portable ZIP (no installer)"
 
-    - name: 📤 Upload Windows app artifacts
+    - name: 📦 Create Windows Installer ZIP
+      run: |
+        # Create installer ZIP with just MSIX file
+        if (Test-Path "build/windows/*.msix") {
+          $msixFile = Get-ChildItem "build/windows/*.msix" | Select-Object -First 1
+          # Create ZIP with MSIX in root (use -j to junk paths)
+          7z a -tzip BitcoinZ-Black-Amber-Windows-Installer.zip $msixFile.FullName
+          Write-Host "Created installer ZIP with MSIX"
+        } else {
+          Write-Host "No MSIX file found, skipping installer ZIP"
+        }
+      continue-on-error: true
+
+    - name: 📤 Upload Windows Portable
       uses: actions/upload-artifact@v4
       with:
-        name: windows-app
-        path: build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows.zip
+        name: windows-portable
+        path: build/windows/x64/runner/Release/BitcoinZ-Black-Amber-Windows-Portable.zip
         if-no-files-found: error
     
-    - name: 📤 Upload Windows MSIX installer (if created)
+    - name: 📤 Upload Windows Installer
       uses: actions/upload-artifact@v4
       with:
-        name: windows-msix
-        path: |
-          build/windows/x64/runner/Release/*.msix
-          build/windows/*.msix
+        name: windows-installer
+        path: BitcoinZ-Black-Amber-Windows-Installer.zip
         if-no-files-found: ignore
 
   # ================================
@@ -632,8 +646,8 @@ jobs:
           artifacts/linux-app/*.rpm
           artifacts/linux-app/*.AppImage
           artifacts/linux-app/*.tar.gz
-          artifacts/windows-app/*.zip
-          artifacts/windows-msix/*.msix
+          artifacts/windows-portable/*.zip
+          artifacts/windows-installer/*.zip
         body: |
           ## 🎉 BitcoinZ Black Amber Release
           
@@ -644,7 +658,9 @@ jobs:
           - **iOS**: Contact for TestFlight/App Store version
           - **macOS**: Universal app bundle (Intel + Apple Silicon)
           - **Linux**: DEB/RPM packages, AppImage, and portable tar.gz
-          - **Windows**: MSIX installer and portable ZIP
+          - **Windows**: 
+            - Portable ZIP (no installation required)
+            - Installer ZIP (contains MSIX installer)
           
           ### ⚡ Optimized for Battery Life
           This release includes significant logging optimizations for better battery performance on mobile devices.
