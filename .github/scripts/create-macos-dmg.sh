@@ -32,6 +32,9 @@ if command -v create-dmg &> /dev/null; then
     # Copy app to temp directory
     cp -R "$APP_NAME" "$DMG_TEMP/"
     
+    # Add instruction text file as visual cue
+    echo "➜ Drag BitcoinZ Black Amber to Applications folder to install" > "$DMG_TEMP/Install Instructions.txt"
+    
     # Create DMG with professional layout
     create-dmg \
         --volname "BitcoinZ Black Amber" \
@@ -39,9 +42,10 @@ if command -v create-dmg &> /dev/null; then
         --window-size 600 400 \
         --text-size 14 \
         --icon-size 100 \
-        --icon "$APP_NAME" 150 185 \
+        --icon "$APP_NAME" 150 250 \
         --hide-extension "$APP_NAME" \
-        --app-drop-link 450 185 \
+        --app-drop-link 450 250 \
+        --icon "Install Instructions.txt" 300 100 \
         --no-internet-enable \
         --format UDZO \
         --hdiutil-quiet \
@@ -72,6 +76,9 @@ else
     
     # Create Applications symlink
     ln -s /Applications "$DMG_TEMP/Applications"
+    
+    # Add instruction text file
+    echo "➜ Drag BitcoinZ Black Amber to Applications folder to install" > "$DMG_TEMP/Install Instructions.txt"
     
     # Create DMG from temp directory
     hdiutil create -volname "BitcoinZ Black Amber" \
