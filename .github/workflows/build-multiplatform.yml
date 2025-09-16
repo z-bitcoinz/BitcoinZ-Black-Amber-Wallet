@@ -327,11 +327,24 @@ jobs:
         chmod +x .github/scripts/create-macos-dmg.sh
         .github/scripts/create-macos-dmg.sh
 
+    - name: 📦 Create macOS ZIP (alternative distribution)
+      run: |
+        cd build/macos/Build/Products/Release
+        # Create a ZIP with the signed app bundle and README
+        cp "${{ github.workspace }}/.github/scripts/README-MACOS.txt" ./README.txt || echo "README not found, continuing..."
+        # Use ditto to create a ZIP that preserves all attributes
+        ditto -c -k --sequesterRsrc --keepParent "BitcoinZ Black Amber.app" BitcoinZ-Black-Amber.zip
+        # Add the README to the ZIP if it exists
+        [ -f README.txt ] && zip -u BitcoinZ-Black-Amber.zip README.txt
+        echo "✅ Created ZIP archive: $(ls -lh BitcoinZ-Black-Amber.zip | awk '{print $5}')"
+
     - name: 📤 Upload macOS app artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macos-app
-        path: build/macos/Build/Products/Release/BitcoinZ-Black-Amber.dmg
+        path: |
+          build/macos/Build/Products/Release/BitcoinZ-Black-Amber.dmg
+          build/macos/Build/Products/Release/BitcoinZ-Black-Amber.zip
 
   # ================================
   # LINUX BUILD

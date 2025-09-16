@@ -49,4 +49,22 @@ ls -lh "$FRAMEWORKS_DIR"/*.dylib 2>/dev/null || echo "No dylib files found"
 echo "📏 Total app bundle size:"
 du -sh "$APP_BUNDLE"
 
+# Ad-hoc sign the app bundle to prevent "damaged app" errors
+echo "🔏 Ad-hoc signing the app bundle..."
+codesign --force --deep --sign - "$APP_BUNDLE"
+if [ $? -eq 0 ]; then
+    echo "✅ App bundle signed successfully"
+    
+    # Verify the signature
+    echo "🔍 Verifying signature..."
+    codesign --verify --deep --verbose "$APP_BUNDLE"
+    if [ $? -eq 0 ]; then
+        echo "✅ Signature verification passed"
+    else
+        echo "⚠️ Signature verification failed, but continuing..."
+    fi
+else
+    echo "⚠️ Ad-hoc signing failed, but continuing..."
+fi
+
 echo "✅ macOS library bundling fix complete"

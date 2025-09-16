@@ -34,8 +34,14 @@ if command -v create-dmg &> /dev/null; then
     # Clear any extended attributes that might cause issues
     xattr -cr "$DMG_TEMP/$APP_NAME"
     
-    # Add instruction text file as visual cue
-    echo "➜ Drag BitcoinZ Black Amber to Applications folder to install" > "$DMG_TEMP/Install Instructions.txt"
+    # Add README with detailed instructions
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    if [ -f "$SCRIPT_DIR/README-MACOS.txt" ]; then
+        cp "$SCRIPT_DIR/README-MACOS.txt" "$DMG_TEMP/README.txt"
+    else
+        # Fallback if README not found
+        echo "➜ Drag BitcoinZ Black Amber to Applications folder to install" > "$DMG_TEMP/README.txt"
+    fi
     
     # Create DMG with professional layout
     create-dmg \
@@ -47,7 +53,7 @@ if command -v create-dmg &> /dev/null; then
         --icon "$APP_NAME" 150 250 \
         --hide-extension "$APP_NAME" \
         --app-drop-link 450 250 \
-        --icon "Install Instructions.txt" 300 100 \
+        --icon "README.txt" 300 100 \
         --no-internet-enable \
         --format UDZO \
         --hdiutil-quiet \
@@ -98,6 +104,15 @@ fi
 if [ -f "$DMG_NAME" ]; then
     echo "✅ DMG created successfully!"
     ls -lh "$DMG_NAME"
+    
+    # Ad-hoc sign the DMG to help with distribution
+    echo "🔏 Ad-hoc signing the DMG..."
+    codesign --force --sign - "$DMG_NAME"
+    if [ $? -eq 0 ]; then
+        echo "✅ DMG signed successfully"
+    else
+        echo "⚠️ DMG signing failed, but continuing..."
+    fi
 else
     echo "❌ Failed to create DMG"
     exit 1
