@@ -6,8 +6,9 @@ categories:
   - Finance
   - Network
 startup_notify: true
-actions:
-  - name: New Window
-    label: Open New Window
+# Removed actions field to fix flutter_distributor compatibility issue
+# actions:
+#   - name: New Window
+#     label: Open New Window
 prebuild_scripts:
   - bash linux/packaging/pre_build.sh
