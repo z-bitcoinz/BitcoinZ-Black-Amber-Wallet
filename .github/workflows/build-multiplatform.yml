@@ -376,7 +376,13 @@ jobs:
         sudo apt-get install -y \
           clang cmake ninja-build pkg-config libgtk-3-dev \
           liblzma-dev libstdc++-12-dev libsecret-1-dev \
-          rpm dpkg-dev protobuf-compiler libprotobuf-dev
+          rpm dpkg-dev protobuf-compiler libprotobuf-dev \
+          wget fuse
+
+        # Install AppImage tools
+        wget -O /tmp/appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x /tmp/appimagetool
+        sudo mv /tmp/appimagetool /usr/local/bin/appimagetool
 
     - name: 📦 Cache Rust dependencies
       uses: actions/cache@v4
@@ -480,11 +486,16 @@ jobs:
       run: |
         # Restore the Rust library before packaging (flutter_distributor runs flutter clean)
         .github/scripts/preserve-rust-library.sh restore
-        # Build AppImage
-        flutter_distributor package --platform linux --targets appimage || true
+        # Verify appimagetool is available
+        if command -v appimagetool >/dev/null 2>&1; then
+          echo "✅ appimagetool found, building AppImage..."
+          flutter_distributor package --platform linux --targets appimage || echo "⚠️ AppImage build failed"
+        else
+          echo "❌ appimagetool not found, skipping AppImage build"
+        fi
         # Check package size
         if [ -d "dist" ]; then
-          find dist -name "*.AppImage" -exec sh -c 'echo "AppImage: $(basename {}) - Size: $(ls -lh {} | awk '"'"'{print $5}'"'"')"' \;
+          find dist -name "*.AppImage" -exec sh -c 'echo "AppImage: $(basename {}) - Size: $(ls -lh {} | awk '"'"'{print $5}'"'"')"' \; 2>/dev/null || echo "No AppImage files found"
         fi
       continue-on-error: true
 
