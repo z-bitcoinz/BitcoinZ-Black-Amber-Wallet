@@ -107,10 +107,49 @@ foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})
 endforeach(bundled_library)
 
 # Copy the native assets provided by the build.dart from all packages.
-set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}native_assets/linux/")
+message(STATUS "🔍 CMake: PROJECT_BUILD_DIR = ${PROJECT_BUILD_DIR}")
+message(STATUS "🔍 CMake: CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
+set(NATIVE_ASSETS_DIR "${PROJECT_BUILD_DIR}/native_assets/linux/")
+message(STATUS "🔍 CMake: Looking for native assets in: ${NATIVE_ASSETS_DIR}")
+
+# Also try alternative paths
+set(ALT_NATIVE_ASSETS_DIR "${CMAKE_BINARY_DIR}/native_assets/linux/")
+message(STATUS "🔍 CMake: Alternative path: ${ALT_NATIVE_ASSETS_DIR}")
+
+if(EXISTS "${NATIVE_ASSETS_DIR}")
+  message(STATUS "✅ CMake: Native assets directory found at primary path")
+  file(GLOB NATIVE_LIBS "${NATIVE_ASSETS_DIR}*.so")
+  foreach(lib ${NATIVE_LIBS})
+    message(STATUS "📦 CMake: Found native library: ${lib}")
+  endforeach()
+elseif(EXISTS "${ALT_NATIVE_ASSETS_DIR}")
+  message(STATUS "✅ CMake: Native assets directory found at alternative path")
+  set(NATIVE_ASSETS_DIR "${ALT_NATIVE_ASSETS_DIR}")
+  file(GLOB NATIVE_LIBS "${NATIVE_ASSETS_DIR}*.so")
+  foreach(lib ${NATIVE_LIBS})
+    message(STATUS "📦 CMake: Found native library: ${lib}")
+  endforeach()
+else()
+  message(WARNING "❌ CMake: Native assets directory not found at either path")
+  message(WARNING "❌ CMake: Primary: ${NATIVE_ASSETS_DIR}")
+  message(WARNING "❌ CMake: Alternative: ${ALT_NATIVE_ASSETS_DIR}")
+endif()
+
 install(DIRECTORY "${NATIVE_ASSETS_DIR}"
    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
    COMPONENT Runtime)
+
+# Fallback: Manually install Rust library if it exists in linux/ directory
+set(RUST_LIB_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libbitcoinz_wallet_rust.so")
+message(STATUS "🔍 CMake: Checking for Rust library at: ${RUST_LIB_PATH}")
+if(EXISTS "${RUST_LIB_PATH}")
+  message(STATUS "✅ CMake: Found Rust library, installing manually")
+  install(FILES "${RUST_LIB_PATH}"
+    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+    COMPONENT Runtime)
+else()
+  message(WARNING "❌ CMake: Rust library not found at: ${RUST_LIB_PATH}")
+endif()
 
 # Fully re-copy the assets directory on each build to avoid having stale files
 # from a previous install.
