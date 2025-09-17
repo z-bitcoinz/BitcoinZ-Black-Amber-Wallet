@@ -23,22 +23,33 @@ backup_rust_lib() {
 # Function to restore the Rust library
 restore_rust_lib() {
     if [ -f "$RUST_LIB_BACKUP" ]; then
-        # Restore to linux directory
+        echo "🔄 Restoring Rust library from backup ($(ls -lh $RUST_LIB_BACKUP | awk '{print $5}'))..."
+
+        # Restore to linux directory (primary location)
         mkdir -p linux
         cp "$RUST_LIB_BACKUP" "$RUST_LIB_SOURCE"
         echo "✅ Rust library restored to $RUST_LIB_SOURCE"
-        
-        # Also copy to build bundle if it exists
+
+        # Copy to native_assets for CMake (critical for flutter_distributor)
+        mkdir -p build/native_assets/linux
+        cp "$RUST_LIB_BACKUP" "build/native_assets/linux/$RUST_LIB_NAME"
+        echo "✅ Rust library copied to native_assets for CMake bundling"
+
+        # Also copy to build bundle if it exists (for manual builds)
         if [ -d "build/linux/x64/release/bundle/lib" ]; then
-            cp "$RUST_LIB_BACKUP" "build/linux/x64/release/bundle/lib/"
-            echo "✅ Rust library copied to bundle/lib"
+            cp "$RUST_LIB_BACKUP" "build/linux/x64/release/bundle/lib/$RUST_LIB_NAME"
+            echo "✅ Rust library copied to existing bundle/lib"
         fi
-        
-        # Copy to native_assets for CMake
-        if [ -d "build/native_assets/linux" ]; then
-            cp "$RUST_LIB_BACKUP" "build/native_assets/linux/"
-            echo "✅ Rust library copied to native_assets"
-        fi
+
+        # Ensure proper permissions
+        chmod 755 "$RUST_LIB_SOURCE"
+        chmod 755 "build/native_assets/linux/$RUST_LIB_NAME"
+
+        # Verify restoration
+        echo "📊 Restored library info:"
+        file "$RUST_LIB_SOURCE"
+        ls -lh "$RUST_LIB_SOURCE"
+
         return 0
     else
         echo "❌ ERROR: Rust library backup not found at $RUST_LIB_BACKUP"

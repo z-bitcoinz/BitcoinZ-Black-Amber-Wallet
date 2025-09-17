@@ -408,11 +408,17 @@ jobs:
 
     # Flutter Rust Bridge bindings already generated and committed
     # Skipping generation step to avoid package dependency issues
-    
+
     - name: ✅ Verify Rust libraries
       run: |
         chmod +x .github/scripts/verify-rust-libs.sh
         .github/scripts/verify-rust-libs.sh
+
+    - name: 💾 Create initial backup of Rust library
+      run: |
+        # Create backup immediately after building Rust library
+        chmod +x .github/scripts/preserve-rust-library.sh
+        .github/scripts/preserve-rust-library.sh backup
     
     - name: 📦 Get Flutter dependencies
       run: |
@@ -450,21 +456,21 @@ jobs:
 
     - name: 📦 Build Linux Debian package
       run: |
-        # Build Debian package (flutter_distributor will run flutter clean)
-        flutter_distributor package --platform linux --targets deb || true
-        # Restore the Rust library after build
+        # Restore the Rust library before packaging (flutter_distributor runs flutter clean)
         .github/scripts/preserve-rust-library.sh restore
-        # Ensure library is in the package build directory
+        # Build Debian package
+        flutter_distributor package --platform linux --targets deb || true
+        # Check package size
         if [ -d "dist" ]; then
           find dist -name "*.deb" -exec sh -c 'echo "DEB package: $(basename {}) - Size: $(ls -lh {} | awk '"'"'{print $5}'"'"')"' \;
         fi
 
     - name: 📦 Build Linux RPM package
       run: |
-        # Build RPM package (flutter_distributor will run flutter clean)
-        flutter_distributor package --platform linux --targets rpm || true
-        # Restore the Rust library after build
+        # Restore the Rust library before packaging (flutter_distributor runs flutter clean)
         .github/scripts/preserve-rust-library.sh restore
+        # Build RPM package
+        flutter_distributor package --platform linux --targets rpm || true
         # Check package size
         if [ -d "dist" ]; then
           find dist -name "*.rpm" -exec sh -c 'echo "RPM package: $(basename {}) - Size: $(ls -lh {} | awk '"'"'{print $5}'"'"')"' \;
@@ -472,23 +478,47 @@ jobs:
 
     - name: 📦 Build Linux AppImage
       run: |
-        # Build AppImage (flutter_distributor will run flutter clean)
-        flutter_distributor package --platform linux --targets appimage || true
-        # Restore the Rust library after build
+        # Restore the Rust library before packaging (flutter_distributor runs flutter clean)
         .github/scripts/preserve-rust-library.sh restore
+        # Build AppImage
+        flutter_distributor package --platform linux --targets appimage || true
         # Check package size
         if [ -d "dist" ]; then
           find dist -name "*.AppImage" -exec sh -c 'echo "AppImage: $(basename {}) - Size: $(ls -lh {} | awk '"'"'{print $5}'"'"')"' \;
         fi
       continue-on-error: true
 
-    - name: 🔍 Verify package sizes
+    - name: 🔍 Verify package sizes and contents
       run: |
         echo "📦 Checking package sizes..."
-        ls -lh dist/*/*.deb 2>/dev/null || echo "No .deb files found"
-        ls -lh dist/*/*.rpm 2>/dev/null || echo "No .rpm files found"  
+        echo "=== DEB Packages ==="
+        if ls dist/*/*.deb 2>/dev/null; then
+          for deb in dist/*/*.deb; do
+            echo "📦 $(basename $deb): $(ls -lh $deb | awk '{print $5}')"
+            # Check if the Rust library is included in the package
+            dpkg-deb -c "$deb" | grep -E "(libbitcoinz_wallet_rust\.so|\.so)" || echo "⚠️ No Rust library found in DEB package"
+          done
+        else
+          echo "No .deb files found"
+        fi
+
+        echo "=== RPM Packages ==="
+        if ls dist/*/*.rpm 2>/dev/null; then
+          for rpm in dist/*/*.rpm; do
+            echo "📦 $(basename $rpm): $(ls -lh $rpm | awk '{print $5}')"
+            # Check if the Rust library is included in the package
+            rpm -qlp "$rpm" 2>/dev/null | grep -E "(libbitcoinz_wallet_rust\.so|\.so)" || echo "⚠️ No Rust library found in RPM package"
+          done
+        else
+          echo "No .rpm files found"
+        fi
+
+        echo "=== AppImage Packages ==="
         ls -lh dist/*/*.AppImage 2>/dev/null || echo "No .AppImage files found"
-        echo "Expected size: ~70MB (with 59MB Rust library + Zcash params)"
+
+        echo ""
+        echo "📏 Expected size: ~70MB (with 59MB Rust library + Flutter assets)"
+        echo "📏 Current small size (~11-13MB) indicates missing Rust library"
 
     - name: 📦 Create Linux tar.gz archive (fallback)
       run: |
