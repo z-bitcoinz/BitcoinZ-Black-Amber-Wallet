@@ -1626,7 +1626,7 @@ class WalletProvider with ChangeNotifier {
 
           // Get the seed phrase from storage
           final authProvider = AuthProvider();
-          final seedPhrase = await authProvider.getSeedPhrase();
+          final seedPhrase = await authProvider.getStoredSeedPhrase();
 
           if (seedPhrase != null) {
             final connected = await _rustService.initialize(
