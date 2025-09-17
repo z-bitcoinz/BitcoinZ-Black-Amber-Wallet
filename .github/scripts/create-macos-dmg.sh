@@ -3,6 +3,9 @@ set -e
 
 echo "🍎 Creating macOS DMG installer..."
 
+# Get script directory before changing paths
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 # Navigate to the build directory
 cd build/macos/Build/Products/Release
 
@@ -35,7 +38,6 @@ if command -v create-dmg &> /dev/null; then
     xattr -cr "$DMG_TEMP/$APP_NAME"
     
     # Add README with detailed instructions
-    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
     if [ -f "$SCRIPT_DIR/README-MACOS.txt" ]; then
         cp "$SCRIPT_DIR/README-MACOS.txt" "$DMG_TEMP/README.txt"
     else
