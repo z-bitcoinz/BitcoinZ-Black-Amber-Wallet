@@ -1,0 +1,9 @@
+# This patch updates prost and tonic to versions that work with modern CMake
+# Apply this patch if the build fails with CMake errors
+
+[dependencies]
+tonic = {version = "0.8.3", features = ["tls", "tls-roots"]}
+prost = "0.11.9"
+
+[build-dependencies]
+tonic-build = "0.8.4"

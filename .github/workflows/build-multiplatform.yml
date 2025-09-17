@@ -376,7 +376,7 @@ jobs:
         sudo apt-get install -y \
           clang cmake ninja-build pkg-config libgtk-3-dev \
           liblzma-dev libstdc++-12-dev libsecret-1-dev \
-          rpm dpkg-dev
+          rpm dpkg-dev protobuf-compiler libprotobuf-dev
 
     - name: 📦 Cache Rust dependencies
       uses: actions/cache@v4
@@ -400,6 +400,8 @@ jobs:
           flutter-${{ runner.os }}-
 
     - name: 🔨 Build Rust libraries for Linux
+      env:
+        PROTOC: /usr/bin/protoc
       run: |
         # Working in root directory
         .github/scripts/build-rust-linux.sh

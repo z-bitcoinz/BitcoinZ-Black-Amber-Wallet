@@ -6,6 +6,11 @@ set -e
 
 echo "🐧 Building Rust libraries for Linux..."
 
+# Set environment variable to use system protoc instead of building from source
+# This avoids CMake compatibility issues with prost-build
+export PROTOC=/usr/bin/protoc
+export PROTOC_INCLUDE=/usr/include
+
 # Navigate to Rust project
 cd rust
 
