@@ -885,60 +885,49 @@ impl<P: consensus::Parameters + Send + Sync + 'static> LightWallet<P> {
     }
 
     pub async fn tbalance(&self, addr: Option<String>) -> u64 {
-        let utxos = self.get_utxos().await;
-        // Filtering UTXOs for balance calculation
-        
-        let filtered_utxos: Vec<_> = utxos
-            .iter()
-            .filter(|utxo| match addr.as_ref() {
-                Some(a) => utxo.address == *a,
-                None => true,
+        // Get all UTXOs (both confirmed and unconfirmed) that are not spent
+        let txns = self.txns.read().await;
+        let total = txns
+            .current
+            .values()
+            .flat_map(|tx| {
+                tx.utxos
+                    .iter()
+                    .filter(|utxo| utxo.spent.is_none())
+                    .filter(|utxo| match addr.as_ref() {
+                        Some(a) => utxo.address == *a,
+                        None => true,
+                    })
+                    .map(|utxo| utxo.value)
             })
-            .collect();
-            
-        for utxo in &filtered_utxos {
-            // Processing UTXO
-        }
-        
-        let total = filtered_utxos.iter().map(|utxo| utxo.value).sum::<u64>();
-        // Balance calculation completed
+            .sum::<u64>();
+
         total
     }
 
     pub async fn spendable_tbalance(&self, addr: Option<String>) -> u64 {
         let anchor_height = self.get_anchor_height().await;
         // Calculating spendable balance
-        
-        let utxos = self.get_utxos().await;
-        // Processing UTXOs for spendable balance
-        
-        let filtered_utxos: Vec<_> = utxos
-            .iter()
-            .filter(|utxo| match addr.as_ref() {
-                Some(a) => utxo.address == *a,
-                None => true,
+
+        // Get UTXOs from confirmed transactions only
+        let txns = self.txns.read().await;
+        let total = txns
+            .current
+            .values()
+            .filter(|tx| !tx.unconfirmed && tx.block <= BlockHeight::from_u32(anchor_height))
+            .flat_map(|tx| {
+                tx.utxos
+                    .iter()
+                    .filter(|utxo| utxo.spent.is_none() && utxo.unconfirmed_spent.is_none())
+                    .filter(|utxo| match addr.as_ref() {
+                        Some(a) => utxo.address == *a,
+                        None => true,
+                    })
+                    .filter(|utxo| utxo.height <= anchor_height as i32)
+                    .map(|utxo| utxo.value)
             })
-            .collect();
-        // UTXOs filtered by address
-        
-        let not_spent: Vec<_> = filtered_utxos
-            .iter()
-            .filter(|utxo| utxo.spent.is_none() && utxo.unconfirmed_spent.is_none())
-            .collect();
-        // UTXOs filtered for spent status
-        
-        let height_filtered: Vec<_> = not_spent
-            .iter()
-            .filter(|utxo| {
-                let passes_height = utxo.height > 0 && utxo.height <= anchor_height as i32;
-                // UTXO height validation
-                passes_height
-            })
-            .collect();
-        // UTXOs filtered by height
-        
-        let total = height_filtered.iter().map(|utxo| utxo.value).sum::<u64>();
-        // Spendable balance calculated
+            .sum::<u64>();
+
         total
     }
 
