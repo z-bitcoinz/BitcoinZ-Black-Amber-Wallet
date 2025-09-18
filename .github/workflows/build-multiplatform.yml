@@ -44,6 +44,12 @@ jobs:
         rustup target list --installed
         echo "✅ Rust setup complete"
 
+    - name: 🔧 Install protobuf compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
+        echo "PROTOC=$(which protoc)" >> $GITHUB_ENV
+
     - name: 📱 Set up Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -130,7 +136,7 @@ jobs:
   build-ios:
     name: 🍎 Build iOS
     runs-on: macos-14
-    
+
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v4
@@ -159,6 +165,11 @@ jobs:
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '15.4'
+
+    - name: 🔧 Install protobuf compiler
+      run: |
+        brew install protobuf
+        echo "PROTOC=$(which protoc)" >> $GITHUB_ENV
 
     - name: 🔧 Install cargo-lipo
       run: cargo install cargo-lipo
@@ -230,7 +241,7 @@ jobs:
   build-macos:
     name: 🖥️ Build macOS
     runs-on: macos-14
-    
+
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v4
@@ -259,6 +270,11 @@ jobs:
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '15.4'
+
+    - name: 🔧 Install protobuf compiler
+      run: |
+        brew install protobuf
+        echo "PROTOC=$(which protoc)" >> $GITHUB_ENV
 
     - name: 🔧 Install cargo-lipo
       run: cargo install cargo-lipo
@@ -552,7 +568,7 @@ jobs:
   build-windows:
     name: 🪟 Build Windows
     runs-on: windows-latest
-    
+
     steps:
     - name: 📥 Checkout repository
       uses: actions/checkout@v4
@@ -568,6 +584,11 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
       with:
         toolchain: ${{ env.RUST_VERSION }}
+
+    - name: 🔧 Install protobuf compiler
+      run: |
+        choco install protoc -y
+        echo "PROTOC=C:\ProgramData\chocolatey\bin\protoc.exe" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
     - name: 📱 Set up Flutter
       uses: subosito/flutter-action@v2
