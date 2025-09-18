@@ -19,8 +19,8 @@ bytes = "0.4"
 log4rs = "1.1.1"
 rand = "0.8.5"
 http = "0.2.4"
-tonic = {version = "0.7.2", features = ["tls", "tls-roots"]}
-prost = "0.10.4"
+tonic = {version = "0.8.3", features = ["tls", "tls-roots"]}
+prost = "0.11.9"
 tokio =  { version = "1.20.0", features = ["full"] }
 tokio-stream = "0.1.9"
 tokio-rustls = "0.23.4"
@@ -72,4 +72,4 @@ portpicker = "0.1.1"
 tempdir = "0.3.7"
 
 [build-dependencies]
-tonic-build = "0.7.2"
+tonic-build = "0.8.2"
